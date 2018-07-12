@@ -10,8 +10,8 @@ namespace OCA\MapUtil\AppInfo;
 
 use OCA\MapUtil\Controller\RecordingController;
 use OCA\MapUtil\Db\RecordingMapper;
-use \OCP\AppFramework\App;
-use \OCA\MapUtil\Controller\PageController;
+use OCP\AppFramework\App;
+use OCA\MapUtil\Controller\PageController;
 use OCP\AppFramework\IAppContainer;
 
 class Application extends App {
