@@ -8,7 +8,6 @@
 
 namespace OCA\MapUtil\AppInfo;
 
-use OCA\MapUtil\Controller\RecordingController;
 use OCA\MapUtil\Db\RecordingMapper;
 use OCP\AppFramework\App;
 use OCA\MapUtil\Controller\PageController;
@@ -28,15 +27,6 @@ class Application extends App {
                 $c->query('Logger'),
                 $c->query('AppName'),
                 $c->query('Request')
-            );
-        });
-
-        $container->registerService('RecordingController', function(IAppContainer $c) {
-            return new RecordingController(
-                $c->query('Logger'),
-                $c->query('AppName'),
-                $c->query('Request'),
-                $c->query('UserId')
             );
         });
 

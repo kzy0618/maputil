@@ -20,9 +20,9 @@ $application->registerRoutes($this, [
             // Only accessible with GET requests
             'verb' => 'GET'
         ],
-        ['name' => 'recording#index', 'url' => '/recordings', 'verb' => 'GET'],
-        ['name' => 'recording#show', 'url' => '/recordings/{id}', 'verb' => 'GET'],
-        ['name' => 'recording#updateWithUrl', 'url' => '/recordings/{id}', 'verb' => 'PUT'], // this one takes id from url
-        ['name' => 'recording#updateWithoutUrl', 'url' => '/recordings', 'verb' => 'PUT'] // this one takes data from ajax body
+        ['name' => 'recording#getCities', 'url' => '/cities', 'verb' => 'GET'],
+        ['name' => 'recording#getSuburbs', 'url' => '/suburbsAt/{city}', 'verb' => 'GET'],
+        ['name' => 'recording#showRecordings', 'url' => '/recordings/{city}/{suburb}', 'verb' => 'GET'],
+        ['name' => 'recording#updateWithUrl', 'url' => '/recordings/{id}', 'verb' => 'PUT']
     ]
 ]);

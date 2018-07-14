@@ -14,6 +14,13 @@ use OCP\AppFramework\Db\Entity;
 class RecordingDTO extends Entity
 {
 
-    //TODO : make a POJO
+    // make a POJO
+    public $id;
+    public $filename;
+    public $recordingType;
+    public $uploader;
+    public $uploadTime;
+    public $content;
+    public $isAddedToMap;
 
 }

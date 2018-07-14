@@ -10,16 +10,23 @@
 namespace OCA\MapUtil\Controller;
 
 
+use OCA\MapUtil\Db\CityTableHandler;
+use OCA\MapUtil\Db\SuburbTableHandler;
+use OCA\MapUtil\Db\RecordingMapper;
 use OCP\AppFramework\Controller;
+use OCP\AppFramework\Http;
+use OCP\AppFramework\Http\DataResponse;
 use OCP\ILogger;
 use OCP\IRequest;
 
 class RecordingController extends Controller
 {
 
-    private $appName;
     private $logger;
     private $uid;
+    private $cityTableHandler;
+    private $suburbTableHandler;
+    private $recordingMapper;
 
     /**
      * PageController constructor.
@@ -27,13 +34,19 @@ class RecordingController extends Controller
      * @param $AppName
      * @param IRequest $request
      * @param $UserId
+     * @param CityTableHandler $cityTableHandler
+     * @param SuburbTableHandler $suburbTableHandler
+     * @param RecordingMapper $recordingMapper
      */
-    public function __construct(ILogger $logger, $AppName, IRequest $request, $UserId)
+    public function __construct(ILogger $logger, $AppName, IRequest $request, $UserId, CityTableHandler $cityTableHandler, SuburbTableHandler $suburbTableHandler, RecordingMapper $recordingMapper)
     {
         parent::__construct($AppName, $request);
         $this->appName = $AppName;
         $this->logger = $logger;
         $this->uid = $UserId;
+        $this->cityTableHandler = $cityTableHandler;
+        $this->suburbTableHandler = $suburbTableHandler;
+        $this->recordingMapper = $recordingMapper;
     }
 
     /**
@@ -62,33 +75,63 @@ class RecordingController extends Controller
      * all handlers in this controller must be privileged to admins only
      * @NoCSRFRequired
      */
-    public function index() {
-        // TODO: Get ALL
+    public function getCities() {
+        if ($this->isInAdminGroup()) {
+            return new DataResponse($this->cityTableHandler->findUploadedCities());
+        } else {
+            return new DataResponse(["YOU NEED TO BE IN ADMIN GROUP IN ORDER TO USE THIS APP!!!"], Http::STATUS_UNAUTHORIZED); // 401 unauthorized
+        }
+    }
+
+    /**
+     * all handlers in this controller must be privileged to admins only
+     * @NoCSRFRequired
+     * @param $city
+     * @return DataResponse
+     */
+    public function getSuburbs($city) {
+        // Get SUBURBS BY CITY
+        if ($this->isInAdminGroup()) {
+            return new DataResponse($this->suburbTableHandler->findSuburbsByCity($city));
+        } else {
+            return new DataResponse(["YOU NEED TO BE IN ADMIN GROUP IN ORDER TO USE THIS APP!!!"], Http::STATUS_UNAUTHORIZED); // 401 unauthorized
+        }
+    }
+
+    /**
+     * all handlers in this controller must be privileged to admins only
+     * @NoCSRFRequired
+     * @param $city
+     * @param $suburb
+     * @return DataResponse
+     */
+    public function showRecordings($city, $suburb){
+        // Get recordings by city and suburb
+        if ($this->isInAdminGroup()) {
+            return new DataResponse($this->recordingMapper->getRecordingsByCitiesAndSuburbs($city, $suburb));
+        } else {
+            return new DataResponse(["YOU NEED TO BE IN ADMIN GROUP IN ORDER TO USE THIS APP!!!"], Http::STATUS_UNAUTHORIZED); // 401 unauthorized
+        }
     }
 
     /**
      * all handlers in this controller must be privileged to admins only
      * @NoCSRFRequired
      * @param $id
+     * @return DataResponse
      */
-    public function show($id){
-        // TODO: Get one from url
-    }
-
-    /**
-     * all handlers in this controller must be privileged to admins only
-     * @NoCSRFRequired
-     */
-    public function updateWithUrl() {
-        // TODO: update one from url, fill in the params list
-    }
-
-    /**
-     * all handlers in this controller must be privileged to admins only
-     * @NoCSRFRequired
-     */
-    public function updateWithoutUrl() {
-        // TODO: update one in terms of ajax body, fill in the params list
+    public function updateWithUrl($id) {
+        // update one from url, fill in the params list
+        if ($this->isInAdminGroup()) {
+            $result = $this->recordingMapper->updateIsAddedToMapState($id);
+            if ($result === false) {
+                return new DataResponse(["deleted"], Http::STATUS_NOT_FOUND);
+            } else {
+                return new DataResponse($result);
+            }
+        } else {
+            return new DataResponse(["YOU NEED TO BE IN ADMIN GROUP IN ORDER TO USE THIS APP!!!"], Http::STATUS_UNAUTHORIZED); // 401 unauthorized
+        }
     }
 
 }
