@@ -18,7 +18,6 @@ use OCP\IRequest;
 class PageController extends Controller
 {
 
-    protected $appName;
     private $logger;
 
     /**
@@ -32,15 +31,14 @@ class PageController extends Controller
         parent::__construct($AppName, $request);
         $this->appName = $AppName;
         $this->logger = $logger;
-		$this->logger->debug("tttttest!!");
+		$this->logger->error("page __construct AppName => $AppName", ['app' => $this->appName]);
     }
 
     /**
-     *
      * @NoCSRFRequired
      */
     public function index() {
-    	$this->logger->debug("asfaafssd");
+    	$this->logger->error("page index AppName => $this->appName", ['app' => $this->appName]);
         $csp = new ContentSecurityPolicy();
         // Allows to access resources from a specific domain. Use * to allow everything from all domains.
         // Here we allow ALL Javascript, images, styles, and fonts from ALL domains.
