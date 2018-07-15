@@ -120,10 +120,30 @@ class RecordingController extends Controller
      * @param $id
      * @return DataResponse
      */
-    public function updateWithUrl($id) {
-        // update one from url, fill in the params list
+    public function updateStandalone($id) {
         if ($this->isInAdminGroup()) {
-            $result = $this->recordingMapper->updateIsAddedToMapState($id);
+            $result = $this->recordingMapper->updateIsStandaloneState($id);
+            if ($result === false) {
+                return new DataResponse(["deleted"], Http::STATUS_NOT_FOUND);
+            } else {
+                return new DataResponse($result);
+            }
+        } else {
+            return new DataResponse(["YOU NEED TO BE IN ADMIN GROUP IN ORDER TO USE THIS APP!!!"], Http::STATUS_UNAUTHORIZED); // 401 unauthorized
+        }
+    }
+
+    /**
+     * all handlers in this controller must be privileged to admins only
+     * @NoCSRFRequired
+     * @param $id
+     * @return DataResponse
+     */
+    public function updateRepresentative($id)
+    {
+        // updateIsRepresentativeState in RecordingMapper
+        if ($this->isInAdminGroup()) {
+            $result = $this->recordingMapper->updateIsRepresentativeState($id);
             if ($result === false) {
                 return new DataResponse(["deleted"], Http::STATUS_NOT_FOUND);
             } else {

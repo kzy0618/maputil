@@ -25,7 +25,8 @@ style('maputil', 'style');
 
                 <div style="text-align: center;">
                     <h1>
-                        <button id="update_second_with_url_param" data-pk="1">Update the second recording with url param</button>
+                        <button id="update_second_standalone" data-pk="1">Update the second recording with is_standalone state</button>
+                        <button id="update_second_representative" data-pk="1">Update the second recording with is_representative state</button>
                     </h1>
 
                     <div style="display: inline-block;">

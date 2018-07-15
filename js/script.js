@@ -17,9 +17,9 @@
 
         let placeholder = $("#placeholder");
 
-        $('#update_second_with_url_param').on('click', () => {
+        $('#update_second_standalone').on('click', () => {
 
-            $.ajax(baseUrl+"/2", {
+            $.ajax(baseUrl + "/update-standalone" + "/2", {
                 method: 'PUT',
                 contentType: 'application/json'
             }).done( (data) => {
@@ -29,7 +29,35 @@
                     sometext.id = "hi";
                     // sometext is of Node type not jQuery Object type hence we use Node method
                     // noinspection JSUnresolvedVariable
-                    sometext.appendChild(document.createTextNode("id = " + data.id + " is_added_to_map = " + data.isAddedToMap + "\n" + JSON.stringify(data)));
+                    sometext.appendChild(document.createTextNode("id = " + data.id + " is_standalone = " + data.isStandalone + "\n" + JSON.stringify(data)));
+                    placeholder.append(sometext); // placeholder is a jQuery Object type hence we use jQuery method
+                }
+            ).fail( (response) => {
+                    console.log(response);
+                    placeholder.empty(); // remove all child nodes
+                    let sometext = document.createElement("H1");
+                    sometext.id = "hi";
+                    // sometext is of Node type not jQuery Object type hence we use Node method
+                    sometext.appendChild(document.createTextNode(JSON.stringify(response)));
+                    placeholder.append(sometext); // placeholder is a jQuery Object type hence we use jQuery method
+                }
+            );
+
+        });
+
+        $('#update_second_representative').on('click', () => {
+
+            $.ajax(baseUrl + "/update-representative" + "/2", {
+                method: 'PUT',
+                contentType: 'application/json'
+            }).done( (data) => {
+                    console.log(data);
+                    placeholder.empty(); // remove all child nodes
+                    let sometext = document.createElement("H1");
+                    sometext.id = "hi";
+                    // sometext is of Node type not jQuery Object type hence we use Node method
+                    // noinspection JSUnresolvedVariable
+                    sometext.appendChild(document.createTextNode("id = " + data.id + " is_representative = " + data.isRepresentative + "\n" + JSON.stringify(data)));
                     placeholder.append(sometext); // placeholder is a jQuery Object type hence we use jQuery method
                 }
             ).fail( (response) => {
@@ -80,15 +108,23 @@
                 let li = document.createElement("LI");
                 li.id = "li-" + recording.id;
                 li.appendChild(document.createTextNode(recording.filename));
-                let btn = document.createElement("BUTTON");
-                btn.id = recording.id;
-                btn.appendChild(document.createTextNode("Update recording id " + recording.id));
-                li.appendChild(btn);
+
+                let standalone_btn = document.createElement("BUTTON");
+                standalone_btn.id = "standalone-" + recording.id;
+                standalone_btn.appendChild(document.createTextNode("Update standalone state for recording id : " + recording.id));
+                li.appendChild(standalone_btn);
+
+                let representative_btn = document.createElement("BUTTON");
+                representative_btn.id = "representative-" + recording.id;
+                representative_btn.appendChild(document.createTextNode("Update representative state for recording id : " + recording.id));
+                li.appendChild(representative_btn);
+
                 recordingSelector.append(li);
-                // now btn is shown on the site we can attach an event listener like so
-                $("#" + btn.id).on('click', () => {
+
+                // now btns are shown on the site we can attach an event listener like so
+                $("#" + standalone_btn.id).on('click', () => {
                     console.log("clicked");
-                    $.ajax(baseUrl + "/" + btn.id, {
+                    $.ajax(baseUrl + "/update-standalone" + "/" + recording.id, {
                         method: 'PUT',
                         contentType: 'application/json'
                     }).done( (data) => {
@@ -98,7 +134,34 @@
                             sometext.id = "hi";
                             // sometext is of Node type not jQuery Object type hence we use Node method
                             // noinspection JSUnresolvedVariable
-                            sometext.appendChild(document.createTextNode("id = " + data.id + " is_added_to_map = " + data.isAddedToMap + "\n" + JSON.stringify(data)));
+                            sometext.appendChild(document.createTextNode("id = " + data.id + " is_standalone = " + data.isStandalone + "\n" + JSON.stringify(data)));
+                            placeholder.append(sometext); // placeholder is a jQuery Object type hence we use jQuery method
+                        }
+                    ).fail( (response) => {
+                            console.log(response);
+                            placeholder.empty(); // remove all child nodes
+                            let sometext = document.createElement("H1");
+                            sometext.id = "hi";
+                            // sometext is of Node type not jQuery Object type hence we use Node method
+                            sometext.appendChild(document.createTextNode(JSON.stringify(response)));
+                            placeholder.append(sometext); // placeholder is a jQuery Object type hence we use jQuery method
+                        }
+                    );
+                });
+
+                $("#" + representative_btn.id).on('click', () => {
+                    console.log("clicked");
+                    $.ajax(baseUrl + "/update-representative" + "/" + recording.id, {
+                        method: 'PUT',
+                        contentType: 'application/json'
+                    }).done( (data) => {
+                            console.log(data);
+                            placeholder.empty(); // remove all child nodes
+                            let sometext = document.createElement("H1");
+                            sometext.id = "hi";
+                            // sometext is of Node type not jQuery Object type hence we use Node method
+                            // noinspection JSUnresolvedVariable
+                            sometext.appendChild(document.createTextNode("id = " + data.id + " is_representative = " + data.isRepresentative + "\n" + JSON.stringify(data)));
                             placeholder.append(sometext); // placeholder is a jQuery Object type hence we use jQuery method
                         }
                     ).fail( (response) => {
