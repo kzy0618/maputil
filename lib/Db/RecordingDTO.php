@@ -21,6 +21,7 @@ class RecordingDTO extends Entity
     public $uploader;
     public $uploadTime;
     public $content;
-    public $isAddedToMap;
+    public $isStandalone;
+    public $isRepresentative;
 
 }

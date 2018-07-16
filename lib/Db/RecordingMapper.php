@@ -38,7 +38,7 @@ class RecordingMapper extends Mapper
     }
 
     public function getRecordingsByCitiesAndSuburbs($city, $suburb){
-        $sql =  "SELECT id, filename, recording_type, uploader, upload_time, content, is_added_to_map FROM oc_recorder_recordings where city_name = ? AND suburb_name = ? order by upload_time DESC";
+        $sql =  "SELECT id, filename, recording_type, uploader, upload_time, content, is_standalone, is_representative FROM oc_recorder_recordings where city_name = ? AND suburb_name = ? order by upload_time DESC";
         $result = $this->execute($sql, [$city, $suburb]);
         $rows = $result->fetchAll(PDO::FETCH_ASSOC);
         $recordings = [];
@@ -50,7 +50,8 @@ class RecordingMapper extends Mapper
             $temp->uploader = $row['uploader'];
             $temp->uploadTime = $row['upload_time'];
             $temp->content = $row['content'];
-            $temp->isAddedToMap = $row['is_added_to_map'];
+            $temp->isStandalone = $row['is_standalone'];
+            $temp->isRepresentative = $row['is_representative'];
             // ADD RECORDING DTO
             $recordings[] = $temp;
         }
@@ -59,10 +60,11 @@ class RecordingMapper extends Mapper
     }
 
     /**
-     * @param $id
+     * @param $id, THE PK OF oc_recorder_recordings
      * @return bool|RecordingDTO, returns the updated DTO, false if it has been permanently removed
      */
-    public function updateIsAddedToMapState($id){
+    public function updateIsStandaloneState($id){
+        // UPDATE SQL FOR STANDALONE MARKER
         $this->log("UPDATED ROW => ID RECEIVED = ".($id));
         if ($this->isPermanentlyDeleted($id) == 1) {
             $this->log("UPDATED ROW => DELETED PERMANENTLY : NOT FOUND!!! row id : ".($id));
@@ -70,9 +72,9 @@ class RecordingMapper extends Mapper
             $this->execute($sql, [$id]);
             return false;
         } else {
-            $sql = "UPDATE oc_recorder_recordings SET is_added_to_map = NOT is_added_to_map WHERE id = ?";
+            $sql = "UPDATE oc_recorder_recordings SET is_standalone = NOT is_standalone WHERE id = ?";
             $this->execute($sql, [$id]);
-            $getUpdatedRowSql = "SELECT id, filename, recording_type, uploader, upload_time, content, is_added_to_map FROM oc_recorder_recordings where id = ?";
+            $getUpdatedRowSql = "SELECT id, filename, recording_type, uploader, upload_time, content, is_standalone, is_representative FROM oc_recorder_recordings where id = ?";
             $result = $this->execute($getUpdatedRowSql, [$id]);
             $row = $result->fetch(PDO::FETCH_ASSOC);
             $temp = new RecordingDTO();
@@ -82,8 +84,43 @@ class RecordingMapper extends Mapper
             $temp->uploader = $row['uploader'];
             $temp->uploadTime = $row['upload_time'];
             $temp->content = $row['content'];
-            $temp->isAddedToMap = $row['is_added_to_map'];
-            $this->log("UPDATED ROW => COLUMN 'is_added_to_map' = ".($temp->isAddedToMap));
+            $temp->isStandalone = $row['is_standalone'];
+            $temp->isRepresentative = $row['is_representative'];
+            $this->log("UPDATED ROW => COLUMN 'is_standalone' = ".($temp->isStandalone));
+            $this->log("UPDATED ROW => COLUMN 'is_representative' = ".($temp->isRepresentative));
+            return $temp;
+        }
+    }
+
+    /**
+     * @param $id, THE PK OF oc_recorder_recordings
+     * @return bool|RecordingDTO, returns the updated DTO, false if it has been permanently removed
+     */
+    public function updateIsRepresentativeState($id) {
+        // UPDATE SQL FOR REPRESENTATIVE MARKER
+        $this->log("UPDATED ROW => ID RECEIVED = ".($id));
+        if ($this->isPermanentlyDeleted($id) == 1) {
+            $this->log("UPDATED ROW => DELETED PERMANENTLY : NOT FOUND!!! row id : ".($id));
+            $sql = "DELETE FROM oc_recorder_recordings WHERE id = ?";
+            $this->execute($sql, [$id]);
+            return false;
+        } else {
+            $sql = "UPDATE oc_recorder_recordings SET is_representative = NOT is_representative WHERE id = ?";
+            $this->execute($sql, [$id]);
+            $getUpdatedRowSql = "SELECT id, filename, recording_type, uploader, upload_time, content, is_standalone, is_representative FROM oc_recorder_recordings where id = ?";
+            $result = $this->execute($getUpdatedRowSql, [$id]);
+            $row = $result->fetch(PDO::FETCH_ASSOC);
+            $temp = new RecordingDTO();
+            $temp->id = $row['id'];
+            $temp->filename = $row['filename'];
+            $temp->recordingType = $row['recording_type'];
+            $temp->uploader = $row['uploader'];
+            $temp->uploadTime = $row['upload_time'];
+            $temp->content = $row['content'];
+            $temp->isStandalone = $row['is_standalone'];
+            $temp->isRepresentative = $row['is_representative'];
+            $this->log("UPDATED ROW => COLUMN 'is_standalone' = ".($temp->isStandalone));
+            $this->log("UPDATED ROW => COLUMN 'is_representative' = ".($temp->isRepresentative));
             return $temp;
         }
     }

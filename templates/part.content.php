@@ -32,34 +32,28 @@
 				</div>
 			</div>
 		</div>
-		<div class="table-responsive">
-			<table class="table table-hover">
-				<thead>
-				<tr>
-					<th scope="col">#</th>
-					<th scope="col">File name</th>
-					<th scope="col">Date</th>
-					<th scope="col" class="buttons">Download</th>
-					<th scope="col" class="buttons">choose</th>
-				</tr>
-				</thead>
-				<tbody>
-				<tr>
-					<th scope="row">1</th>
-					<td>http://asfdqfasfqw</td>
-					<td>2017/04/08</td>
-					<td class="buttons"><button type="button" class="btn">Download</td>
-					<td class="buttons"><input type="radio" name="optradio"></td>
-				</tr>
-				<tr>
-					<th scope="row">2</th>
-					<td>http://asfdqfasfqw</td>
-					<td>2017/04/08</td>
-					<td class="buttons"><button type="button" class="btn">Download</td>
-					<td class="buttons"><input type="radio" name="optradio"></td>
-				</tr>
-				</tbody>
-			</table>
+		<ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+			<li class="nav-item">
+				<a class="nav-link active" id="pills-home-tab" data-toggle="pill" href="#pills-home" role="tab" aria-controls="pills-home" aria-selected="true">Representative</a>
+			</li>
+			<li class="nav-item">
+				<a class="nav-link" id="pills-profile-tab" data-toggle="pill" href="#pills-profile" role="tab" aria-controls="pills-profile" aria-selected="false">multi</a>
+			</li>
+		</ul>
+		<div class="tab-content" id="pills-tabContent">
+			<div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
+				<div class="table-responsive">
+					<table class="table table-hover" id="datatable">
+						<thead>
+						</thead>
+						<tbody>
+						</tbody>
+					</table>
+				</div>
+			</div>
+			<div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">
+				table shown
+			</div>
 		</div>
 
 

@@ -23,6 +23,7 @@ $application->registerRoutes($this, [
         ['name' => 'recording#getCities', 'url' => '/cities', 'verb' => 'GET'],
         ['name' => 'recording#getSuburbs', 'url' => '/suburbsAt/{city}', 'verb' => 'GET'],
         ['name' => 'recording#showRecordings', 'url' => '/recordings/{city}/{suburb}', 'verb' => 'GET'],
-        ['name' => 'recording#updateWithUrl', 'url' => '/recordings/{id}', 'verb' => 'PUT']
+        ['name' => 'recording#updateStandalone', 'url' => '/recordings/update-standalone/{id}', 'verb' => 'PUT'],
+        ['name' => 'recording#updateRepresentative', 'url' => '/recordings/update-representative/{id}', 'verb' => 'PUT']
     ]
 ]);
