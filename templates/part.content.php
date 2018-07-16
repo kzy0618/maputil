@@ -16,10 +16,7 @@
 						<label class="input-group-text" for="citylist">City</label>
 					</div>
 					<select class="custom-select" id="citylist">
-						<option selected>Choose...</option>
-<!--						<option value="1">Auckland</option>-->
-<!--						<option value="2">Hamilton</option>-->
-<!--						<option value="3">Queenstown</option>-->
+						<option selected value = "default">Choose...</option>
 					</select>
 				</div>
 			</div>
@@ -29,15 +26,42 @@
 					<div class="input-group-prepend">
 						<label class="input-group-text" for="suburblist">Suburb</label>
 					</div>
-					<select class="custom-select" id="suburblist">
-						<option selected>Choose...</option>
-						<option value="1">Britomart</option>
-						<option value="2">Manukau</option>
-						<option value="3">Newmarket</option>
+					<select class="custom-select" id="suburblist" disabled>
+						<option selected value = "default">Choose...</option>
 					</select>
 				</div>
 			</div>
 		</div>
+		<div class="table-responsive">
+			<table class="table table-hover">
+				<thead>
+				<tr>
+					<th scope="col">#</th>
+					<th scope="col">File name</th>
+					<th scope="col">Date</th>
+					<th scope="col" class="buttons">Download</th>
+					<th scope="col" class="buttons">choose</th>
+				</tr>
+				</thead>
+				<tbody>
+				<tr>
+					<th scope="row">1</th>
+					<td>http://asfdqfasfqw</td>
+					<td>2017/04/08</td>
+					<td class="buttons"><button type="button" class="btn">Download</td>
+					<td class="buttons"><input type="radio" name="optradio"></td>
+				</tr>
+				<tr>
+					<th scope="row">2</th>
+					<td>http://asfdqfasfqw</td>
+					<td>2017/04/08</td>
+					<td class="buttons"><button type="button" class="btn">Download</td>
+					<td class="buttons"><input type="radio" name="optradio"></td>
+				</tr>
+				</tbody>
+			</table>
+		</div>
+
 
 	</div>
 	<!--		<div class="data-panel">datapanel</div>-->

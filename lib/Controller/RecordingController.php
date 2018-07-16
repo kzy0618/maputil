@@ -76,12 +76,11 @@ class RecordingController extends Controller
      * @NoCSRFRequired
      */
     public function getCities() {
-//        if ($this->isInAdminGroup()) {
-//            return new DataResponse($this->cityTableHandler->findUploadedCities());
-//        } else {
-//            return new DataResponse(["YOU NEED TO BE IN ADMIN GROUP IN ORDER TO USE THIS APP!!!"], Http::STATUS_UNAUTHORIZED); // 401 unauthorized
-//        }
-		return new DataResponse([["A"],["B"],["C"]],'200');
+        if ($this->isInAdminGroup()) {
+            return new DataResponse($this->cityTableHandler->findUploadedCities());
+        } else {
+            return new DataResponse(["YOU NEED TO BE IN ADMIN GROUP IN ORDER TO USE THIS APP!!!"], Http::STATUS_UNAUTHORIZED); // 401 unauthorized
+        }
     }
 
     /**
@@ -91,7 +90,7 @@ class RecordingController extends Controller
      * @return DataResponse
      */
     public function getSuburbs($city) {
-        // Get SUBURBS BY CITY
+		// Get SUBURBS BY CITY
         if ($this->isInAdminGroup()) {
             return new DataResponse($this->suburbTableHandler->findSuburbsByCity($city));
         } else {
