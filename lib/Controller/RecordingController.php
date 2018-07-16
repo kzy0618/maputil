@@ -10,12 +10,14 @@
 namespace OCA\MapUtil\Controller;
 
 
+use OC\Files\Node\File;
 use OCA\MapUtil\Db\CityTableHandler;
 use OCA\MapUtil\Db\SuburbTableHandler;
 use OCA\MapUtil\Db\RecordingMapper;
 use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http;
 use OCP\AppFramework\Http\DataResponse;
+use OCP\Files\NotFoundException;
 use OCP\ILogger;
 use OCP\IRequest;
 
@@ -151,6 +153,50 @@ class RecordingController extends Controller
             }
         } else {
             return new DataResponse(["YOU NEED TO BE IN ADMIN GROUP IN ORDER TO USE THIS APP!!!"], Http::STATUS_UNAUTHORIZED); // 401 unauthorized
+        }
+    }
+
+    /**
+     * all handlers in this controller must be privileged to admins only
+     * @NoCSRFRequired
+     * @param $id
+     * @return DataResponse|Http\DownloadResponse
+     */
+    public function download($id) {
+        if ($this->isInAdminGroup()) {
+            $result = $this->recordingMapper->verifyDownload($id);
+            if ($result === "recycle") {
+                return new DataResponse(["recycle"], Http::STATUS_FORBIDDEN); // 403
+            } elseif ($result === "deleted") {
+                return new DataResponse(["deleted"], Http::STATUS_NOT_FOUND); // 404
+            } else {
+                return $this->generateDownloadResponse($id, $result);
+            }
+        } else {
+            return new DataResponse(["YOU NEED TO BE IN ADMIN GROUP IN ORDER TO USE THIS APP!!!"], Http::STATUS_UNAUTHORIZED); // 401 unauthorized
+        }
+    }
+
+    private function generateDownloadResponse ($id, $path) {
+        try {
+            $storage = \OC::$server->getUserFolder('Frenchalexia')->getStorage();
+            $isExisting = $storage->file_exists($path);
+            $this->log("DEBUGGING IN RecordingController->download id received => $id , file exist : ".$isExisting);
+            if (!$isExisting) {
+                throw new NotFoundException("deleted");
+            }
+            $handle = $storage->fopen($path, "rb"); // b for Binary fread()
+            $this->log("DEBUGGING IN RecordingController->download id received => $id , file read : ".$handle);
+            $size = $storage->filesize($path);
+            $this->log("DEBUGGING IN RecordingController->download id received => $id , file size : ".$size);
+            $temp = fread($handle, $size);
+            $pos = ftell($handle);
+            $this->log("DEBUGGING IN RecordingController->download id received => $id , file pointer pos : ".$pos);
+            fclose($handle);
+            $pathFragments = explode("/", $path);
+            return new Http\DataDownloadResponse($temp, end($pathFragments), "audio/wav");
+        } catch (NotFoundException $e) {
+            return new DataResponse(["deleted"], Http::STATUS_NOT_FOUND); // 404
         }
     }
 
