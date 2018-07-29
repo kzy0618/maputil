@@ -145,4 +145,26 @@ class RecordingMapper extends Mapper
         return $numberOfRows;
     }
 
+    /**
+     * @param $id
+     * @return string return the internal path if found in oc_filecache, 'recycle' if in recycle bin, 'deleted' if the file has been deleted permanently
+     */
+    public function verifyDownload($id){
+        // SELECT f.path from vonz.oc_recorder_recordings as r, vonz.oc_filecache as f WHERE r.id = 22 AND r.filename = f.name;
+        $sql = "SELECT f.path FROM oc_recorder_recordings AS r, oc_filecache AS f WHERE r.id = ? AND r.filename = f.name";
+        $row = $this->execute($sql, [$id])->fetch(PDO::FETCH_ASSOC);
+        if ($row !== false) {
+            return $row['path']; // internal path
+        } else {
+            // if not in oc_filecache
+            // SELECT * from vonz.oc_recorder_recordings as r, vonz.oc_files_trash as f WHERE r.id = 22 AND r.filename = f.id;
+            $sql = "SELECT * from oc_recorder_recordings as r, oc_files_trash as f WHERE r.id = ? AND r.filename = f.id";
+            if ($this->execute($sql, [$id])->fetch(PDO::FETCH_ASSOC) !== false) {
+                return "recycle"; // in recycle bin
+            } else {
+                return "deleted"; // deleted permanently
+            }
+        }
+    }
+
 }

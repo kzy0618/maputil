@@ -67,43 +67,72 @@
 			let deferred = $.Deferred();
 			let suburb = $('#suburblist').val();
 			suburbchoosen = suburb;
-			console.log("suburb choose: " + citychoosen);
-			console.log("suburb choose: " + suburbchoosen);
-			console.log(baseUrl+"/recordings/"+citychoosen+"/"+suburbchoosen);
 			if (suburb != "default") {
 				$.get(baseUrl+"/recordings/"+citychoosen+"/"+suburbchoosen).done(function(recordings){
 					console.log(recordings);
 					let mytable = $('#datatable > tbody');
 					let myheader = $('#datatable > thead');
+					mytable.html('');
+					myheader.html('');
 					let header =$('<tr>')
 						.append($('<th>').attr('scope','col').text('#'))
+						.append($('<th>').attr('scope','col').text('ID'))
 						.append($('<th>').attr('scope','col').text('Filename'))
 						.append($('<th>').attr('scope','col').text('Upload Date'))
-						.append($('<th>').attr('scope','col').text('Download'))
-						.append($('<th>').attr('scope','col').text('Choose'));
+						.append($('<th>').attr('scope','col').text('Download').attr('class','buttons'))
+						.append($('<th>').attr('scope','col').text('Choose').attr('class','buttons'));
 					myheader.append(header);
 
+					let count = 1;
 					for(let i = recordings.length-1; i>=0; i--){
 						let recording = recordings[i];
+						let radiobutton = ($('<td>').attr('class','buttons')
+							.append($('<input>').attr('type','radio').attr('name','optradio')
+								.click(	function(){
+									$.ajax({
+										url: baseUrl+"/recordings/update-representative/"+recording.id,
+										method: 'PUT'
+									}).done(function(response){
+										console.log(response);
+										alert("successful");
+									}).fail(function(response){
+										console.log(response);
+										alert("fail");
+									});
+								})));
+
 						let row =$('<tr>')
-							.append($('<th>').attr('scope','row').text(recording.id))
+							.append($('<th>').attr('scope','row').text(count))
+							.append($('<td>').text(recording.id))
 							.append($('<td>').text(recording.filename))
 							.append($('<td>').text(recording.uploadTime))
 							.append($('<td>').attr('class','buttons')
 								.append($('<button>').attr('type','button').attr('class','btn').text('Download')))
-							.append(($('<td>').attr('class','buttons')
-								.append($('<input>').attr('type','radio').attr('name','optradio'))));
+							.append(radiobutton);
 						mytable.append(row);
+						count++;
 					}
 					}).fail(function(){
 						deferred.reject();
 						alert("fail to get data");
 					});
-			}else{
-
 			}
-
 		});
+
+		function radioButtonClick(recording){
+			console.log("recording ID is: "+recording.id);
+			$.ajax({
+				url: baseUrl+"/recordings/update-representative/"+recording.id,
+				method: 'PUT'
+			}).done(function(response){
+				console.log(response);
+				alert("successful");
+			}).fail(function(response){
+				console.log(response);
+				alert("fail");
+			});
+		}
+
 
 		// this will be map to 'recording#index', the last bit is the 'url' part of the corresponding route, see routes
 		let baseUrl = OC.generateUrl("/apps/maputil"); // '/recordings' is the last bit
@@ -112,7 +141,7 @@
 		//sent request to controller to get city which contains recordings.
 		let cities = new Citylist(baseUrl);
 		cities.loadAll().done(function () {
-			alert('success');
+			console.log('data retrieve success');
 		}).fail(function () {
 			alert('Could not load notes');
 		});
