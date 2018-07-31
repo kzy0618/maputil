@@ -180,139 +180,47 @@
 
         let testUrl = OC.generateUrl("/apps/maputil/recordings/update-representative-for-radio-btn");
 
+        // test normal
         let test1 = document.createElement("BUTTON");
         document.getElementById("tests").appendChild(test1);
         test1.appendChild(document.createTextNode("set fourth record to 1 and second to 0"));
         test1.addEventListener("click", () => {
             $.post(testUrl, {
                 idToSetTrue : 4,
-                idToSetFalse : 2
+                arrayOfIdsToSetFalse : [2]
             }).done(console.log).fail(console.log);
         });
 
+        // test invalid pk
         let test2 = document.createElement("BUTTON");
         document.getElementById("tests").appendChild(test2);
-        test2.appendChild(document.createTextNode("set fourth record to 0, bypass the other"));
+        test2.appendChild(document.createTextNode("set fourth record to 0, No.666 (invalid) to 1"));
         test2.addEventListener("click", () => {
             $.post(testUrl, {
-                idToSetTrue : "null",
-                idToSetFalse : 4
+                idToSetTrue : 666,
+                arrayOfIdsToSetFalse : [4]
             }).done(console.log).fail(console.log);
         });
 
+        // test invalid ids to be set-false
         let test3 = document.createElement("BUTTON");
         document.getElementById("tests").appendChild(test3);
-        test3.appendChild(document.createTextNode("set second record to 1, bypass the other"));
+        test3.appendChild(document.createTextNode("set second record to 1, with [4, 666]"));
         test3.addEventListener("click", () => {
             $.post(testUrl, {
                 idToSetTrue : 2,
-                idToSetFalse : "null"
+                arrayOfIdsToSetFalse : [4, 666]
             }).done(console.log).fail(console.log);
         });
 
+        // test invalid rows representing removed files
         let test4 = document.createElement("BUTTON");
         document.getElementById("tests").appendChild(test4);
-        test4.appendChild(document.createTextNode("bypass all"));
+        test4.appendChild(document.createTextNode("attempt to set an deleted record to 1"));
         test4.addEventListener("click", () => {
             $.post(testUrl, {
-                idToSetTrue : "null",
-                idToSetFalse : "null"
-            }).done(console.log).fail(console.log);
-        });
-
-        let test5 = document.createElement("BUTTON");
-        document.getElementById("tests").appendChild(test5);
-        test5.appendChild(document.createTextNode("set fourth record to 1 and second to 0 strict mode on"));
-        test5.addEventListener("click", () => {
-            $.post(testUrl, {
-                idToSetTrue : 4,
-                idToSetFalse : 2,
-                strictMode : true
-            }).done(console.log).fail(console.log);
-        });
-
-        let test6 = document.createElement("BUTTON");
-        document.getElementById("tests").appendChild(test6);
-        test6.appendChild(document.createTextNode("set fourth record to 0, bypass the other strict mode on"));
-        test6.addEventListener("click", () => {
-            $.post(testUrl, {
-                idToSetTrue : "null",
-                idToSetFalse : 4,
-                strictMode : true
-            }).done(console.log).fail(console.log);
-        });
-
-        let test7 = document.createElement("BUTTON");
-        document.getElementById("tests").appendChild(test7);
-        test7.appendChild(document.createTextNode("set second record to 1, bypass the other strict mode on"));
-        test7.addEventListener("click", () => {
-            $.post(testUrl, {
-                idToSetTrue : 2,
-                idToSetFalse : "null",
-                strictMode : true
-            }).done(console.log).fail(console.log);
-        });
-
-        let test8 = document.createElement("BUTTON");
-        document.getElementById("tests").appendChild(test8);
-        test8.appendChild(document.createTextNode("non existence test both strict mode on"));
-        test8.addEventListener("click", () => {
-            $.post(testUrl, {
-                idToSetTrue : 777,
-                idToSetFalse : 888,
-                strictMode : true
-            }).done(console.log).fail(console.log);
-        });
-
-        let test9 = document.createElement("BUTTON");
-        document.getElementById("tests").appendChild(test9);
-        test9.appendChild(document.createTextNode("non existence test set_false_record_deleted strict mode on"));
-        test9.addEventListener("click", () => {
-            $.post(testUrl, {
-                idToSetTrue : 4,
-                idToSetFalse : 888,
-                strictMode : true
-            }).done(console.log).fail(console.log);
-        });
-
-        let test10 = document.createElement("BUTTON");
-        document.getElementById("tests").appendChild(test10);
-        test10.appendChild(document.createTextNode("non existence test set_true_record_deleted strict mode on"));
-        test10.addEventListener("click", () => {
-            $.post(testUrl, {
-                idToSetTrue : 777,
-                idToSetFalse : 2,
-                strictMode : true
-            }).done(console.log).fail(console.log);
-        });
-
-        let test11 = document.createElement("BUTTON");
-        document.getElementById("tests").appendChild(test11);
-        test11.appendChild(document.createTextNode("non existence test both"));
-        test11.addEventListener("click", () => {
-            $.post(testUrl, {
-                idToSetTrue : 777,
-                idToSetFalse : 888
-            }).done(console.log).fail(console.log);
-        });
-
-        let test12 = document.createElement("BUTTON");
-        document.getElementById("tests").appendChild(test12);
-        test12.appendChild(document.createTextNode("non existence test set_false_record_deleted"));
-        test12.addEventListener("click", () => {
-            $.post(testUrl, {
-                idToSetTrue : 2,
-                idToSetFalse : 888
-            }).done(console.log).fail(console.log);
-        });
-
-        let test13 = document.createElement("BUTTON");
-        document.getElementById("tests").appendChild(test13);
-        test13.appendChild(document.createTextNode("non existence test set_true_record_deleted"));
-        test13.addEventListener("click", () => {
-            $.post(testUrl, {
-                idToSetTrue : 777,
-                idToSetFalse : 4
+                idToSetTrue : 23,
+                arrayOfIdsToSetFalse : [5, 2]
             }).done(console.log).fail(console.log);
         });
 

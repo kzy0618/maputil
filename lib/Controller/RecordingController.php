@@ -158,68 +158,22 @@ class RecordingController extends Controller
 
     /**
      * all handlers in this controller must be privileged to admins only
-     * * $strictMode === true, the UI will be eagerly synchronized and eagerly re-rendered
-     * * $strictMode === false, the UI will be lazily synchronized and lazily re-rendered
-     * * $idToSetTrue === "null", bypass set true operation
-     * * $idToSetFalse === "null", bypass set false operation
+     * this request is handled by bulk operations, it can take some time
      * @NoCSRFRequired
      * @param $idToSetTrue pk id of the recording to set is_representative to true
-     * @param $idToSetFalse pk id of the recording to set is_representative to false
-     * @param bool $strictMode default false, when set to true, 404 will be generated if the recording to be set to false was deleted permanently. when $strictMode == false, don't care whether the recording to be set to false has been deleted or not. In both case, 404 will be generated if the recording to be set to true has been permanently removed. Final remark: this $strictMode only matters if and only if none of the operations is bypassed. If any operation is bypassed, the remaining one follows the standard procedure. If both are bypassed, a 200 will be return with empty body.
+     * @param array $arrayOfIdsToSetFalse
      * @return DataResponse
      */
-    public function updateRepresentativeForRadioBtn($idToSetTrue, $idToSetFalse, $strictMode = false)
+    public function updateRepresentativeForRadioBtn($idToSetTrue, array $arrayOfIdsToSetFalse)
     {
         if ($this->isInAdminGroup()) {
 
-            $resultOfSetIdToTrue = null;
-            $resultOfSetIdToFalse = null;
-
-            if ( $idToSetTrue !== "null" ) {
-                $resultOfSetIdToTrue = $this->recordingMapper->setIsRepresentativeStateToTrue($idToSetTrue);
-            }
-            if ( $idToSetFalse !== "null" ) {
-                $resultOfSetIdToFalse = $this->recordingMapper->setIsRepresentativeStateToFalse($idToSetFalse);
-            }
-            // check bypass
-            if ( $resultOfSetIdToTrue === null && $resultOfSetIdToFalse === null ) {
-                return new DataResponse();
-            }
-
-            if ( $resultOfSetIdToTrue === null )
-            {
-                if ($resultOfSetIdToFalse === false) {
-                    return new DataResponse(["deleted"], Http::STATUS_NOT_FOUND);
-                } else {
-                    return new DataResponse($resultOfSetIdToFalse);
-                }
-            }
-            elseif ( $resultOfSetIdToFalse === null )
-            {
-                if ($resultOfSetIdToTrue === false) {
-                    return new DataResponse(["deleted"], Http::STATUS_NOT_FOUND);
-                } else {
-                    return new DataResponse($resultOfSetIdToTrue);
-                }
-            }
-            else {
-                // check non existence
-                if ( $resultOfSetIdToTrue === false ) {
-                    return new DataResponse(["deleted"], Http::STATUS_NOT_FOUND);
-                } else {
-                    switch ($strictMode) {
-                        case true: // strict mode, eager re-render
-                            if ( $resultOfSetIdToFalse === false ) { // if the recording being set to false is actually deleted from the file system, we still want to inform the client the non-existence of the recording so that it can eagerly conduct a refresh/full-reload, or just re-rendering the dom without reloading, depending on the implementation decision of the frontend. This is solely for allowing some freedom in UI logic. The database is ALWAYS synchronizing eagerly whenever it's got the chance. The frontend can utilize this mode to eagerly remove any UI elements that represent deleted recordings. The trade-off is, if the UI conducts full-reload, then it will be annoying from the user's perspective. This works most efficiently if the UI conducts only re-rendering.
-                                return new DataResponse(["deleted"], Http::STATUS_NOT_FOUND);
-                            } else {
-                                return new DataResponse($resultOfSetIdToTrue);
-                            }
-                            break;
-                        default:
-                            // lazy mode. The UI elements, which represent removed recordings, will only be deleted in the web page if the user wants to set it to true. Otherwise they will be persisted in UI before the web page conducts a full-reload/re-rendering intentionally (due to other 404/403 responses).
-                            return new DataResponse($resultOfSetIdToTrue);
-                    }
-                }
+            $result = $this->recordingMapper->isRepresentativeStateHandler($idToSetTrue, $arrayOfIdsToSetFalse);
+            if ($result === false) {
+                // not necessary means the target record is deleted but this is an indication of page reload
+                return new DataResponse(["deleted"], Http::STATUS_NOT_FOUND);
+            } else {
+                return new DataResponse($result);
             }
 
         } else {
