@@ -180,18 +180,24 @@ class RecordingController extends Controller
     private function generateDownloadResponse ($id, $path) {
         try {
             $storage = \OC::$server->getUserFolder('Frenchalexia')->getStorage();
-            $isExisting = $storage->file_exists($path);
-            $this->log("DEBUGGING IN RecordingController->download id received => $id , file exist : ".$isExisting);
-            if (!$isExisting) {
-                throw new NotFoundException("deleted");
+            $temp = null;
+            $handle = null;
+            $size = 1;
+            $pos = 0;
+            while ($pos !== $size) {
+                $isExisting = $storage->file_exists($path);
+                $this->log("DEBUGGING IN RecordingController->download id received => $id , file exist : ".$isExisting);
+                if (!$isExisting) {
+                    throw new NotFoundException("deleted");
+                }
+                $handle = $storage->fopen($path, "rb"); // b for Binary fread()
+                $this->log("DEBUGGING IN RecordingController->download id received => $id , file read : ".$handle);
+                $size = $storage->filesize($path);
+                $this->log("DEBUGGING IN RecordingController->download id received => $id , file size : ".$size);
+                $temp = fread($handle, $size);
+                $pos = ftell($handle);
+                $this->log("DEBUGGING IN RecordingController->download id received => $id , file pointer pos : ".$pos);
             }
-            $handle = $storage->fopen($path, "rb"); // b for Binary fread()
-            $this->log("DEBUGGING IN RecordingController->download id received => $id , file read : ".$handle);
-            $size = $storage->filesize($path);
-            $this->log("DEBUGGING IN RecordingController->download id received => $id , file size : ".$size);
-            $temp = fread($handle, $size);
-            $pos = ftell($handle);
-            $this->log("DEBUGGING IN RecordingController->download id received => $id , file pointer pos : ".$pos);
             fclose($handle);
             $pathFragments = explode("/", $path);
             return new Http\DataDownloadResponse($temp, end($pathFragments), "audio/wav");

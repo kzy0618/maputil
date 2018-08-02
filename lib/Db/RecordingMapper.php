@@ -156,13 +156,25 @@ class RecordingMapper extends Mapper
         if ($row !== false) {
             return $row['path']; // internal path
         } else {
+            // check if the input id is valid
+            $checkIfIDValid = "SELECT COUNT(NULL) FROM oc_recorder_recordings WHERE id = ?";
+            $count = $this->execute($checkIfIDValid, [$id])->fetchColumn();
+            if ($count == 0) {
+                return "deleted"; // not a valid pk
+            }
+            
             // if not in oc_filecache
-            // SELECT * from vonz.oc_recorder_recordings as r, vonz.oc_files_trash as f WHERE r.id = 22 AND r.filename = f.id;
-            $sql = "SELECT * from oc_recorder_recordings as r, oc_files_trash as f WHERE r.id = ? AND r.filename = f.id";
-            if ($this->execute($sql, [$id])->fetch(PDO::FETCH_ASSOC) !== false) {
-                return "recycle"; // in recycle bin
-            } else {
+            $result = $this->isPermanentlyDeleted($id);
+            if ($result == 1) {
+
+                // ONLY MAPUTIL CAN DELETE ROWS
+                $this->log("UPDATED ROW => DELETED PERMANENTLY : NOT FOUND!!! row id : ".($id));
+                $sql = "DELETE FROM oc_recorder_recordings WHERE id = ?";
+                $this->execute($sql, [$id]);
+
                 return "deleted"; // deleted permanently
+            } else {
+                return "recycle"; // in recycle bin
             }
         }
     }
