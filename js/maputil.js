@@ -73,6 +73,19 @@
 				$.get(baseUrl+"/recordings/"+citychoosen+"/"+suburbchoosen).done(function(recordings){
 					console.log(recordings);
 
+					//saving data
+					let repsentativeDataId = 0,
+						representativeDataFalseIdArray = [];
+
+					recordings.forEach(recording =>{
+						if(recording.isRepresentative == 1){
+							repsentativeDataId = recording.id;
+						}else{
+							representativeDataFalseIdArray.push(recording.id);
+						}
+					});
+					console.log(representativeDataFalseIdArray);
+
 					//Dynamically inserting representative table items
 					let mytable = $('table#representative > tbody');
 					let myheader = $('table#representative > thead');
@@ -91,9 +104,23 @@
 						let recording = recordings[i];
 						let radiobutton = $('<input>').attr('type','radio').attr('name','optradio')
 								.on('click', () => {
-									$.ajax(baseUrl+"/recordings/update-representative/"+recording.id,{
-										method: 'PUT',
-										contentType: 'application/json'
+
+									//saving data
+									if(repsentativeDataId != 0){
+										representativeDataFalseIdArray.push(repsentativeDataId);
+									}
+									repsentativeDataId = recording.id;
+									representativeDataFalseIdArray = representativeDataFalseIdArray.filter(function(id){
+										return id != repsentativeDataId;
+									});
+
+									$.ajax(baseUrl+"/recordings/update-representative-for-radio-btn",{
+										method: 'POST',
+										contentType: 'application/json',
+										data: JSON.stringify({
+											idToSetTrue: repsentativeDataId,
+											arrayOfIdsToSetFalse:representativeDataFalseIdArray
+										})
 									}).done(function(response){
 										console.log(response);
 										alert("table is updated");
@@ -178,8 +205,6 @@
 						deferred.reject();
 						alert("fail to get data");
 					});
-
-
 			}
 		});
 

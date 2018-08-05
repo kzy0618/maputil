@@ -178,6 +178,52 @@
             });
         });
 
+        let testUrl = OC.generateUrl("/apps/maputil/recordings/update-representative-for-radio-btn");
+
+        // test normal
+        let test1 = document.createElement("BUTTON");
+        document.getElementById("tests").appendChild(test1);
+        test1.appendChild(document.createTextNode("set fourth record to 1 and second to 0"));
+        test1.addEventListener("click", () => {
+            $.post(testUrl, {
+                idToSetTrue : 4,
+                arrayOfIdsToSetFalse : [2]
+            }).done(console.log).fail(console.log);
+        });
+
+        // test invalid pk
+        let test2 = document.createElement("BUTTON");
+        document.getElementById("tests").appendChild(test2);
+        test2.appendChild(document.createTextNode("set fourth record to 0, No.666 (invalid) to 1"));
+        test2.addEventListener("click", () => {
+            $.post(testUrl, {
+                idToSetTrue : 666,
+                arrayOfIdsToSetFalse : [4]
+            }).done(console.log).fail(console.log);
+        });
+
+        // test invalid ids to be set-false
+        let test3 = document.createElement("BUTTON");
+        document.getElementById("tests").appendChild(test3);
+        test3.appendChild(document.createTextNode("set second record to 1, with [4, 666]"));
+        test3.addEventListener("click", () => {
+            $.post(testUrl, {
+                idToSetTrue : 2,
+                arrayOfIdsToSetFalse : [4, 666]
+            }).done(console.log).fail(console.log);
+        });
+
+        // test invalid rows representing removed files
+        let test4 = document.createElement("BUTTON");
+        document.getElementById("tests").appendChild(test4);
+        test4.appendChild(document.createTextNode("attempt to set an deleted record to 1"));
+        test4.addEventListener("click", () => {
+            $.post(testUrl, {
+                idToSetTrue : 23,
+                arrayOfIdsToSetFalse : [5, 2]
+            }).done(console.log).fail(console.log);
+        });
+
     });
 
 })(OC, jQuery);

@@ -10,7 +10,7 @@
 namespace OCA\MapUtil\Controller;
 
 
-use OC\Files\Node\File;
+
 use OCA\MapUtil\Db\CityTableHandler;
 use OCA\MapUtil\Db\SuburbTableHandler;
 use OCA\MapUtil\Db\RecordingMapper;
@@ -151,6 +151,31 @@ class RecordingController extends Controller
             } else {
                 return new DataResponse($result);
             }
+        } else {
+            return new DataResponse(["YOU NEED TO BE IN ADMIN GROUP IN ORDER TO USE THIS APP!!!"], Http::STATUS_UNAUTHORIZED); // 401 unauthorized
+        }
+    }
+
+    /**
+     * all handlers in this controller must be privileged to admins only
+     * this request is handled by bulk operations, it can take some time
+     * @NoCSRFRequired
+     * @param $idToSetTrue pk id of the recording to set is_representative to true
+     * @param array $arrayOfIdsToSetFalse
+     * @return DataResponse
+     */
+    public function updateRepresentativeForRadioBtn($idToSetTrue, array $arrayOfIdsToSetFalse)
+    {
+        if ($this->isInAdminGroup()) {
+
+            $result = $this->recordingMapper->isRepresentativeStateHandler($idToSetTrue, $arrayOfIdsToSetFalse);
+            if ($result === false) {
+                // not necessary means the target record is deleted but this is an indication of page reload
+                return new DataResponse(["deleted"], Http::STATUS_NOT_FOUND);
+            } else {
+                return new DataResponse($result);
+            }
+
         } else {
             return new DataResponse(["YOU NEED TO BE IN ADMIN GROUP IN ORDER TO USE THIS APP!!!"], Http::STATUS_UNAUTHORIZED); // 401 unauthorized
         }

@@ -22,7 +22,6 @@ style('maputil', 'style');
 
             <div id="app-content-wrapper">
 				<?php print_unescaped($this->inc('part.content'))?>
-
             </div>
 
         </div>
