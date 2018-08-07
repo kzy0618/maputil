@@ -136,10 +136,7 @@
 
 						let downloadButton = $('<button>').attr('type','button').addClass('btn').html('Download')
 							.on('click', function() {
-								$.get(baseUrl+"/download/"+recording.id).done(function(response){
-										alert("success");
-										console.log(response);
-									}).fail();
+								window.location.replace(baseUrl+"/download/"+recording.id);
 							});
 
 						let row =$('<tr>')
