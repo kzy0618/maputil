@@ -224,6 +224,26 @@
             }).done(console.log).fail(console.log);
         });
 
+        // URL pattern : OC.generateUrl("/apps/maputil/bulk-download") + "?idsToDownload[]=27&idsToDownload[]=25&idsToDownload[]=22&idsToDownload[]=26"
+        let testBulkDownload = document.createElement("BUTTON");
+        document.getElementById("tests").appendChild(testBulkDownload);
+        testBulkDownload.appendChild(document.createTextNode("attempt to perform bulk download"));
+        testBulkDownload.addEventListener("click", () => {
+            $.get(OC.generateUrl("/apps/maputil/bulk-download"), {
+                idsToDownload : [27, 25, 22, 26]
+            });
+        });
+
+        // URL pattern : OC.generateUrl("/apps/maputil/bulk-download") + "?idsToDownload[]=27&idsToDownload[]=25&idsToDownload[]=22&idsToDownload[]=7777"
+        let testBulkDownloadInvalid = document.createElement("BUTTON");
+        document.getElementById("tests").appendChild(testBulkDownloadInvalid);
+        testBulkDownloadInvalid.appendChild(document.createTextNode("attempt to perform bulk download invalid"));
+        testBulkDownloadInvalid.addEventListener("click", () => {
+            $.get(OC.generateUrl("/apps/maputil/bulk-download"), {
+                idsToDownload : [27, 25, 22, 7777]
+            });
+        });
+
     });
 
 })(OC, jQuery);
