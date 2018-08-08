@@ -244,6 +244,15 @@
             });
         });
 
+        let testBulkDeletion = document.createElement("BUTTON");
+        document.getElementById("tests").appendChild(testBulkDeletion);
+        testBulkDeletion.appendChild(document.createTextNode("attempt to perform bulk deletion"));
+        testBulkDeletion.addEventListener("click", () => {
+            $.post(OC.generateUrl("/apps/maputil/bulk-delete"), {
+                idsToDelete : [44, 45, 46, 47]
+            });
+        });
+
     });
 
 })(OC, jQuery);

@@ -237,6 +237,7 @@ class RecordingController extends Controller
             if ($doCleanUp) {
                 $this->log("going to delete temp zip at Frenchalexia's files dir at path : $path");
                 $isDeleted = $storage->unlink($path);
+                $this->recordingMapper->deleteFileRowInFilecacheByName(end($pathFragments));
                 if ($isDeleted === false) {
                     throw new \Exception("FAIL TO DELETE TEMP FILE BEFORE GENERATING DATA DOWNLOAD RESPONSE");
                 } else {
@@ -253,10 +254,12 @@ class RecordingController extends Controller
                         $targetName = explode(".", $file)[0];
                         if ($targetName === $nameToSearch) {
                             $this->log("FIND THE FILE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! : $file");
+                            $this->recordingMapper->deleteFileRowInFilecacheByName($file);
                             $isDeleted = $storage->unlink("files_trashbin/files/".$file);
                         }
                     }
                     closedir($dir);
+                    $this->recordingMapper->deleteFileRowInFileTrashBinByName(end($pathFragments));
                     if ($isDeleted === false) {
                         $this->log("the file $path has gone");
                     } else {
@@ -328,6 +331,7 @@ class RecordingController extends Controller
                     $storage = \OC::$server->getUserFolder('Frenchalexia')->getStorage();
                     $this->log("going to delete temp zip at Frenchalexia's files dir at path : $filenameRelativeToFrenchalexiaDir");
                     $isDeleted = $storage->unlink($filenameRelativeToFrenchalexiaDir);
+                    $this->recordingMapper->deleteFileRowInFilecacheByName($tempname);
                     if ($isDeleted === false) {
                         throw new \Exception("FAIL TO DELETE TEMP FILE BEFORE GENERATING DATA DOWNLOAD RESPONSE");
                     } else {
@@ -344,10 +348,12 @@ class RecordingController extends Controller
                             $targetName = explode(".", $file)[0];
                             if ($targetName === $nameToSearch) {
                                 $this->log("FIND THE FILE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! : $file");
+                                $this->recordingMapper->deleteFileRowInFilecacheByName($file);
                                 $isDeleted = $storage->unlink("files_trashbin/files/".$file);
                             }
                         }
                         closedir($dir);
+                        $this->recordingMapper->deleteFileRowInFileTrashBinByName($tempname);
                         if ($isDeleted === false) {
                             $this->log("the file $tempname has gone");
                         } else {
@@ -362,6 +368,52 @@ class RecordingController extends Controller
         } else {
             return new DataResponse(["YOU NEED TO BE IN ADMIN GROUP IN ORDER TO USE THIS APP!!!"], Http::STATUS_UNAUTHORIZED); // 401 unauthorized
         }
+    }
+
+    /**
+     * Optimistic bulk deletion
+     * @NoCSRFRequired
+     * @param array $idsToDelete
+     * @throws NotFoundException
+     */
+    public function bulkDelete (array $idsToDelete) {
+        $storage = \OC::$server->getUserFolder('Frenchalexia')->getStorage();
+        foreach ($idsToDelete as $id) {
+            $internalPath = $this->recordingMapper->getRecordingInternalPathById($id);
+            if ($internalPath !== false) {
+                $storage->unlink($internalPath);
+                $pathFragments = explode("/", $internalPath);
+                $filename = end($pathFragments);
+                $this->recordingMapper->deleteFileRowInFilecacheByName($filename);
+                $unqualifiedFilename = explode(".", $filename)[0];
+                $this->recordingMapper->deleteFileRowInFilecacheByName($unqualifiedFilename.".txt");
+                $text = "";
+                for ($i = 0; $i < (count($pathFragments) - 1); $i++) {
+                    $text .= $pathFragments[$i]."/";
+                }
+                $text .= $unqualifiedFilename;
+                $this->log("DEBUGGING IN BULK DELETION : Attempt to delete text file at <$text.txt>");
+                $storage->unlink($text.".txt");
+                $dir = $storage->opendir("files_trashbin/files");
+                if ($dir !== false) {
+                    $nameToSearch = explode(".", $filename)[0];
+                    $this->log("FILENAME TO SEARCH IN TRASH BIN : $nameToSearch");
+                    while (($file = readdir($dir)) !== false) {
+//                        $this->log("LISTING FILES IN TRASH BIN : $file");
+                        $targetName = explode(".", $file)[0];
+                        if ($targetName === $nameToSearch) {
+                            $this->log("FIND THE FILE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! : $file");
+                            $this->recordingMapper->deleteFileRowInFilecacheByName($file);
+                            $storage->unlink("files_trashbin/files/".$file);
+                        }
+                    }
+                    closedir($dir);
+                    $this->recordingMapper->deleteFileRowInFileTrashBinByName($filename);
+                    $this->recordingMapper->deleteFileRowInFileTrashBinByName($unqualifiedFilename.".txt");
+                }
+            }
+        }
+        $this->recordingMapper->deleteRecordingsByIds($idsToDelete);
     }
 
 }
