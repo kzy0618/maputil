@@ -13,7 +13,7 @@
 			<div class="col-lg-6 col-md-6 col-sm-6 city">
 				<div class="input-group mb-3">
 					<div class="input-group-prepend">
-						<label class="input-group-text" for="citylist">City</label>
+						<label class="input-group-text" for="citylist">@City</label>
 					</div>
 					<select class="custom-select" id="citylist">
 						<option selected value = "default">Choose...</option>
@@ -23,10 +23,27 @@
 			<div class="col-lg-6 col-md-6 col-sm-6 suburb">
 				<div class="input-group mb-3">
 					<div class="input-group-prepend">
-						<label class="input-group-text" for="suburblist">Suburb</label>
+						<label class="input-group-text" for="suburblist">@Suburb</label>
 					</div>
 					<select class="custom-select" id="suburblist" disabled>
 						<option selected value = "default">Choose...</option>
+					</select>
+				</div>
+			</div>
+		</div>
+		<div class="row" >
+			<div class="col-lg-6 col-md-6 col-sm-6 city">
+				<div class="input-group mb-3">
+					<div class="input-group-prepend">
+						<label class="input-group-text" for="typeList">@Type</label>
+					</div>
+					<select class="custom-select" id="citylist" disabled>
+						<option selected value = "default">Choose...</option>
+						<option selected value = "word">word</option>
+						<option selected value = "sentence">sentence</option>
+						<option selected value = "list_word">list_word</option>
+						<option selected value = "short_sentence">short_sentence</option>
+						<option selected value = "unclassified">unclassified</option>
 					</select>
 				</div>
 			</div>

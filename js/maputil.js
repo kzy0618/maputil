@@ -84,7 +84,6 @@
 							representativeDataFalseIdArray.push(recording.id);
 						}
 					});
-					console.log(representativeDataFalseIdArray);
 
 					//Dynamically inserting representative table items
 					let mytable = $('table#representative > tbody');
@@ -95,6 +94,7 @@
 						.append($('<th>').attr('scope','col').text('#'))
 						.append($('<th>').attr('scope','col').text('ID'))
 						.append($('<th>').attr('scope','col').text('Filename'))
+						.append($('<th>').attr('scope','col').text('Type'))
 						.append($('<th>').attr('scope','col').text('Upload Date'))
 						.append($('<th>').attr('scope','col').text('Download').attr('class','buttons'))
 						.append($('<th>').attr('scope','col').text('Choose').attr('class','buttons'));
@@ -104,7 +104,6 @@
 						let recording = recordings[i];
 						let radiobutton = $('<input>').attr('type','radio').attr('name','optradio')
 								.on('click', () => {
-
 									//saving data
 									if(repsentativeDataId != 0){
 										representativeDataFalseIdArray.push(repsentativeDataId);
@@ -143,6 +142,7 @@
 							.append($('<th>').attr('scope','row').text(count))
 							.append($('<td>').text(recording.id))
 							.append($('<td>').text(recording.filename))
+							.append($('<td>').text(recording.recordingType))
 							.append($('<td>').text(recording.uploadTime))
 							.append($('<td>').attr('class','buttons')
 								.append(downloadButton))
@@ -236,7 +236,6 @@
 			$('div#representative').show();
 			$('#representativeButton').addClass("active");
 		});
-
 
 
 		// this will be map to 'recording#index', the last bit is the 'url' part of the corresponding route, see routes
