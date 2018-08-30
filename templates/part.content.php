@@ -3,6 +3,7 @@
 <!--<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>-->
 <!--script sheet cannot be used in main.php, has to be in the js file-->
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
 <div class="container">
 	<div class="filter-bar bg-light">
@@ -37,7 +38,7 @@
 					<div class="input-group-prepend">
 						<label class="input-group-text" for="typeList">@Type</label>
 					</div>
-					<select class="custom-select" id="citylist" disabled>
+					<select class="custom-select" id="typeList" disabled>
 						<option selected value = "default">Choose...</option>
 						<option selected value = "word">word</option>
 						<option selected value = "sentence">sentence</option>
@@ -53,8 +54,9 @@
 		<div class="tab">
 			<button class="tablinks active" id="representativeButton">Representative</button>
 			<button class="tablinks" id="standalongButton">Standalong</button>
+			<div class="downloadAll"><button class="fa fa-download" id="downloadAll"></button></div>
+			<div class="Delete"><button class="fa fa-trash" id="Delete"></button></div>
 		</div>
-
 			<div class="tab-content tabcontent" id="representative">
 				<div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
 					<div class="table-responsive">

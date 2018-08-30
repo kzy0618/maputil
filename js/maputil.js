@@ -1,5 +1,5 @@
 (function (OC, $) {
-	$(document).ready( () => { // IMPORTANT NOTICE : $.ready( fn ) DOES NOT WORK, IT MUST BE $(document).ready( fn )
+	$(document).ready(() => { // IMPORTANT NOTICE : $.ready( fn ) DOES NOT WORK, IT MUST BE $(document).ready( fn )
 		console.log("document start");
 
 		let citychoosen = "default";
@@ -65,143 +65,201 @@
 			return deferred.promise();
 		});
 
-		$('#suburblist').change(function(data){
+		function createTable(recordings){
+				console.log(recordings);
+				//saving data
+				let repsentativeDataId = 0,
+					representativeDataFalseIdArray = [];
+
+				recordings.forEach(recording =>{
+					if(recording.isRepresentative == 1){
+						repsentativeDataId = recording.id;
+					}else{
+						representativeDataFalseIdArray.push(recording.id);
+					}
+				});
+
+				//Dynamically inserting representative table items
+				let mytable = $('table#representative > tbody');
+				let myheader = $('table#representative > thead');
+				mytable.html('');
+				myheader.html('');
+				let header =$('<tr>')
+					.append($('<th>').attr('scope','col').text(''))
+					.append($('<th>').attr('scope','col').text('#'))
+					.append($('<th>').attr('scope','col').text('ID'))
+					.append($('<th>').attr('scope','col').text('Filename'))
+					.append($('<th>').attr('scope','col').text('content'))
+					.append($('<th>').attr('scope','col').text('Type'))
+					.append($('<th>').attr('scope','col').text('Upload Date'))
+					.append($('<th>').attr('scope','col').text('Choose').attr('class','buttons'));
+				myheader.append(header);
+				let count = 1;
+				for(let i = recordings.length-1; i>=0; i--){
+					let recording = recordings[i];
+					let radiobutton = $('<input>').attr('type','radio').attr('name','optradio')
+						.on('click', () => {
+							//saving data
+							if(repsentativeDataId != 0){
+								representativeDataFalseIdArray.push(repsentativeDataId);
+							}
+							repsentativeDataId = recording.id;
+							representativeDataFalseIdArray = representativeDataFalseIdArray.filter(function(id){
+								return id != repsentativeDataId;
+							});
+
+							$.ajax(baseUrl+"/recordings/update-representative-for-radio-btn",{
+								method: 'POST',
+								contentType: 'application/json',
+								data: JSON.stringify({
+									idToSetTrue: repsentativeDataId,
+									arrayOfIdsToSetFalse:representativeDataFalseIdArray
+								})
+							}).done(function(response){
+								console.log(response);
+								alert("table is updated");
+							}).fail(function(response){
+								alert("fail");
+							});
+						});
+					if(recording.isRepresentative == 1){
+						radiobutton.attr('checked', true);
+					}
+
+					let hyperLinkDownload = $('<a>').attr('href',baseUrl+'/download/'+recording.id).text(recording.filename).addClass('hyperLinkDownload');
+					let dataCheckbox = $('<input>').attr('type','checkbox').attr('name','dataCheck').attr('value',recording.id);
+					let row =$('<tr>')
+						.append($('<th>').append(dataCheckbox))
+						.append($('<th>').attr('scope','row').text(count))
+						.append($('<td>').text(recording.id))
+						.append($('<td>').append(hyperLinkDownload))
+						.append($('<td>').text(recording.content))
+						.append($('<td>').text(recording.recordingType))
+						.append($('<td>').text(recording.uploadTime))
+						.append($('<td>').attr('class','buttons').append(radiobutton));
+					mytable.append(row);
+					count++;
+				}
+
+				//Dynamically inserting standalong table items
+				mytable = $('table#stand-along > tbody');
+				myheader = $('table#stand-along > thead');
+				mytable.html('');
+				myheader.html('');
+				header =$('<tr>')
+					.append($('<th>').attr('scope','col').text('#'))
+					.append($('<th>').attr('scope','col').text('ID'))
+					.append($('<th>').attr('scope','col').text('Filename'))
+					.append($('<th>').attr('scope','col').text('content'))
+					.append($('<th>').attr('scope','col').text('Upload Date'))
+					.append($('<th>').attr('scope','col').text('Check').attr('class','buttons'));
+				myheader.append(header);
+
+				count = 1;
+				for(let i = recordings.length-1; i>=0; i--){
+					let recording = recordings[i];
+					let checkbox = $('<input>').attr('type','checkbox').attr('name','optcheck')
+						.on('click', () => {
+							$.ajax(baseUrl+"/recordings/update-standalone/"+recording.id,{
+								method: 'PUT',
+								contentType: 'application/json'
+							}).done(function(response){
+								console.log(response);
+								alert("table is updated");
+							}).fail(function(response){
+								console.log(response);
+								alert("fail");
+							});
+						});
+					if(recording.isStandalone == 1){
+						checkbox.prop('checked',true);
+					}
+					let hyperLinkDownload = $('<a>').attr('href',baseUrl+'/download/'+recording.id).text(recording.filename).addClass('hyperLinkDownload');
+					let row =$('<tr>')
+						.append($('<th>').attr('scope','row').text(count))
+						.append($('<td>').text(recording.id))
+						.append($('<td>').append(hyperLinkDownload))
+						.append($('<td>').text(recording.content))
+						.append($('<td>').text(recording.uploadTime))
+						.append(checkbox)
+						.append(($('<td>').attr('class','buttons').append(checkbox)));
+					mytable.append(row);
+					count++;
+				}
+
+				$('#downloadAll').on('click',() => {
+					let checkedItems = [];
+					// let downloadUrl = baseUrl+ "/bulk-download?";
+
+					$("input[name = 'dataCheck']:checked").each(function(){
+						checkedItems.push(parseInt($(this).val()));
+					});
+
+					// for(let i = 0; i < checkedItems.length; i++){
+					// 	downloadUrl = downloadUrl+"&idsToDownload[]="+$(this).val();
+					// 	if(i !=checkedItems.length - 1 ){
+					// 		downloadUrl = downloadUrl+"&"
+					// 	}
+					// }
+					// console.log(downloadUrl);
+					// window.open(downloadUrl);
+
+					$.get(baseUrl+ "/bulk-download", {
+						idsToDownload : checkedItems
+					}).done(function(){
+					});
+					console.log(checkedItems);
+				});
+
+				$('#Delete').on('click',() => {
+					let checkedItems = [];
+					$("input[name = 'dataCheck']:checked").each(function(){
+						checkedItems.push(parseInt($(this).val()));
+					});
+					$.post(OC.generateUrl("/apps/maputil/bulk-delete"), {
+						idsToDelete : checkedItems
+					}).done(function() {
+						createTable();
+					});
+					console.log(checkedItems);
+				})
+
+		}
+
+		function typeFilter(recordings){
+			let typelist = $('#typeList');
+			typelist.prop('disabled',false);
+			let filteredRecoridngs = [];
+			let type = list.val();
+			typelist.change(function() {
+				if(type == "word"){
+					console.log("word chosen");
+				}else if (type == "sentence"){
+
+				}else if (type == "list_word"){
+
+				}else if (type == "short_sentence"){
+
+				}else if (type == "unclassfied"){
+
+				}
+
+			});
+		}
+
+		$('#suburblist').change(function(){
 			let deferred = $.Deferred();
 			let suburb = $('#suburblist').val();
 			suburbchoosen = suburb;
 			if (suburb != "default") {
+				console.log("create table");
 				$.get(baseUrl+"/recordings/"+citychoosen+"/"+suburbchoosen).done(function(recordings){
-					console.log(recordings);
-
-					//saving data
-					let repsentativeDataId = 0,
-						representativeDataFalseIdArray = [];
-
-					recordings.forEach(recording =>{
-						if(recording.isRepresentative == 1){
-							repsentativeDataId = recording.id;
-						}else{
-							representativeDataFalseIdArray.push(recording.id);
-						}
-					});
-
-					//Dynamically inserting representative table items
-					let mytable = $('table#representative > tbody');
-					let myheader = $('table#representative > thead');
-					mytable.html('');
-					myheader.html('');
-					let header =$('<tr>')
-						.append($('<th>').attr('scope','col').text('#'))
-						.append($('<th>').attr('scope','col').text('ID'))
-						.append($('<th>').attr('scope','col').text('Filename'))
-						.append($('<th>').attr('scope','col').text('Type'))
-						.append($('<th>').attr('scope','col').text('Upload Date'))
-						.append($('<th>').attr('scope','col').text('Download').attr('class','buttons'))
-						.append($('<th>').attr('scope','col').text('Choose').attr('class','buttons'));
-					myheader.append(header);
-					let count = 1;
-					for(let i = recordings.length-1; i>=0; i--){
-						let recording = recordings[i];
-						let radiobutton = $('<input>').attr('type','radio').attr('name','optradio')
-								.on('click', () => {
-									//saving data
-									if(repsentativeDataId != 0){
-										representativeDataFalseIdArray.push(repsentativeDataId);
-									}
-									repsentativeDataId = recording.id;
-									representativeDataFalseIdArray = representativeDataFalseIdArray.filter(function(id){
-										return id != repsentativeDataId;
-									});
-
-									$.ajax(baseUrl+"/recordings/update-representative-for-radio-btn",{
-										method: 'POST',
-										contentType: 'application/json',
-										data: JSON.stringify({
-											idToSetTrue: repsentativeDataId,
-											arrayOfIdsToSetFalse:representativeDataFalseIdArray
-										})
-									}).done(function(response){
-										console.log(response);
-										alert("table is updated");
-									}).fail(function(response){
-										console.log(response);
-										alert("fail");
-									});
-								});
-						if(recording.isRepresentative == 1){
-							console.log("chekced id: "+ recording.id);
-							radiobutton.attr('checked', true);
-						}
-
-						let downloadButton = $('<button>').attr('type','button').addClass('btn').html('Download')
-							.on('click', function() {
-								window.location.replace(baseUrl+"/download/"+recording.id);
-							});
-
-						let row =$('<tr>')
-							.append($('<th>').attr('scope','row').text(count))
-							.append($('<td>').text(recording.id))
-							.append($('<td>').text(recording.filename))
-							.append($('<td>').text(recording.recordingType))
-							.append($('<td>').text(recording.uploadTime))
-							.append($('<td>').attr('class','buttons')
-								.append(downloadButton))
-							.append($('<td>').attr('class','buttons').append(radiobutton));
-						mytable.append(row);
-						count++;
-					}
-
-					//Dynamically inserting standalong table items
-					mytable = $('table#stand-along > tbody');
-					myheader = $('table#stand-along > thead');
-					mytable.html('');
-					myheader.html('');
-					header =$('<tr>')
-						.append($('<th>').attr('scope','col').text('#'))
-						.append($('<th>').attr('scope','col').text('ID'))
-						.append($('<th>').attr('scope','col').text('Filename'))
-						.append($('<th>').attr('scope','col').text('Upload Date'))
-						.append($('<th>').attr('scope','col').text('Download').attr('class','buttons'))
-						.append($('<th>').attr('scope','col').text('Check').attr('class','buttons'));
-					myheader.append(header);
-
-					count = 1;
-					for(let i = recordings.length-1; i>=0; i--){
-						let recording = recordings[i];
-						let checkbox = $('<input>').attr('type','checkbox').attr('name','optcheck')
-								.on('click', () => {
-									$.ajax(baseUrl+"/recordings/update-standalone/"+recording.id,{
-										method: 'PUT',
-										contentType: 'application/json'
-									}).done(function(response){
-										console.log(response);
-										alert("table is updated");
-									}).fail(function(response){
-										console.log(response);
-										alert("fail");
-									});
-								});
-						if(recording.isStandalone == 1){
-							checkbox.prop('checked',true);
-						}
-
-						let row =$('<tr>')
-							.append($('<th>').attr('scope','row').text(count))
-							.append($('<td>').text(recording.id))
-							.append($('<td>').text(recording.filename))
-							.append($('<td>').text(recording.uploadTime))
-							.append($('<td>').attr('class','buttons')
-								.append($('<button>').attr('type','button').attr('class','btn').text('Download')))
-							.append(checkbox)
-							.append(($('<td>').attr('class','buttons').append(checkbox)));
-						mytable.append(row);
-						count++;
-					}
-
-					}).fail(function(){
-						deferred.reject();
-						alert("fail to get data");
-					});
+					createTable(recordings);
+					typeFilter(recordings);
+				}).fail(function(){
+					deferred.reject();
+					alert("fail to get data");
+				});
 			}
 		});
 
@@ -237,10 +295,8 @@
 			$('#representativeButton').addClass("active");
 		});
 
-
 		// this will be map to 'recording#index', the last bit is the 'url' part of the corresponding route, see routes
 		let baseUrl = OC.generateUrl("/apps/maputil"); // '/recordings' is the last bit
-		console.log("maputil url: "+baseUrl);
 
 		//sent request to controller to get city which contains recordings.
 		let cities = new Citylist(baseUrl);

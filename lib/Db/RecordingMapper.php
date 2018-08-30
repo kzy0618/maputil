@@ -357,4 +357,27 @@ class RecordingMapper extends Mapper
         return $this->execute($sql)->rowCount();
     }
 
+    public function deleteFileRowInFilecacheByName($name) {
+        $sql = "DELETE FROM oc_filecache WHERE name = ?";
+        $this->execute($sql, [$name]);
+    }
+
+    public function deleteFileRowInFileTrashBinByName($name) {
+        $sql = "DELETE FROM oc_files_trash WHERE id = ?";
+        $this->execute($sql, [$name]);
+    }
+
+    public function deleteRecordingsByIds(array $ids) {
+        foreach ($ids as $id) {
+            $sql = "DELETE FROM oc_recorder_recordings WHERE id = ?";
+            $this->execute($sql, [$id]);
+        }
+    }
+
+    public function getRecordingInternalPathById($id) {
+        $sql = "SELECT internal_path FROM oc_recorder_recordings WHERE id = ?";
+        $result = $this->execute($sql, [$id])->fetchColumn();
+        return $result;
+    }
+
 }

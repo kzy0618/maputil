@@ -53,3 +53,22 @@
 .table{
 	margin-bottom: 0px;
 }
+
+.hyperLinkDownload{
+	color:black;
+}
+
+a:hover{
+	color:blue;
+	text-decoration: underline;
+}
+
+.Delete{
+	float: right;
+	padding: 0px;
+}
+
+.downloadAll{
+	padding: 0px;
+	float : right;
+}
