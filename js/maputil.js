@@ -4,6 +4,7 @@
 
 		let citychoosen = "default";
 		let suburbchoosen = "default";
+		let recordingData = [];
 		function Citylist(baseUrl) {
 			this._baseUrl = baseUrl;
 			this._cities = [];
@@ -41,8 +42,9 @@
 				$('#suburblist').prop('disabled',false);
 				$.get(baseUrl + "/suburbsAt/" + city).done(function (suburbs) {
 					let list = $('#suburblist');
-					let defaultPption = document.createElement("option");
-					defaultPption.text = "Choose...";
+					// let defaultPption = document.createElement("option");
+					// defaultPption.text = "Choose...";
+                    let defaultPption = $('<option>').text("Choose...").attr('value','default');
 					list.empty().append(defaultPption);
 					for (let i = 0; i < suburbs.length; i++) {
 						let option = document.createElement("option");
@@ -58,6 +60,8 @@
 				let defaultPption = document.createElement("option");
 				defaultPption.text = "Choose...";
 				$('#suburblist').empty().append(defaultPption).prop('disabled',true);
+                $('#typeList').val("default").attr('selected','selected');
+                $('#typeList').prop('disabled',true);
 			}
 			else{
 				alert("choose a city");
@@ -66,6 +70,7 @@
 		});
 
 		function createTable(recordings){
+				console.log("DEBUG INFORMATION: recording data retrieve");
 				console.log(recordings);
 				//saving data
 				let repsentativeDataId = 0,
@@ -189,26 +194,20 @@
 
 				$('#downloadAll').on('click',() => {
 					let checkedItems = [];
-					// let downloadUrl = baseUrl+ "/bulk-download?";
+					let downloadUrl = baseUrl+ "/bulk-download?";
 
 					$("input[name = 'dataCheck']:checked").each(function(){
 						checkedItems.push(parseInt($(this).val()));
 					});
 
-					// for(let i = 0; i < checkedItems.length; i++){
-					// 	downloadUrl = downloadUrl+"&idsToDownload[]="+$(this).val();
-					// 	if(i !=checkedItems.length - 1 ){
-					// 		downloadUrl = downloadUrl+"&"
-					// 	}
-					// }
-					// console.log(downloadUrl);
-					// window.open(downloadUrl);
-
-					$.get(baseUrl+ "/bulk-download", {
-						idsToDownload : checkedItems
-					}).done(function(){
-					});
-					console.log(checkedItems);
+                    console.log(checkedItems);
+					for(let i = 0; i < checkedItems.length; i++){
+						downloadUrl = downloadUrl+"&idsToDownload[]="+checkedItems[i];
+						if(i !=checkedItems.length - 1 ){
+							downloadUrl = downloadUrl+"&";
+						}
+					}
+					window.open(downloadUrl);
 				});
 
 				$('#Delete').on('click',() => {
@@ -222,28 +221,54 @@
 						createTable();
 					});
 					console.log(checkedItems);
-				})
+				});
 
 		}
 
 		function typeFilter(recordings){
 			let typelist = $('#typeList');
 			typelist.prop('disabled',false);
-			let filteredRecoridngs = [];
-			let type = list.val();
 			typelist.change(function() {
+                let type = typelist.val();
+                let filteredRecoridngs = [];
 				if(type == "word"){
-					console.log("word chosen");
+                    recordings.forEach(recording => {
+                    	if (recording.recordingType == "word") {
+                    		filteredRecoridngs.push(recording);
+                    	}
+                    });
+                    createTable(filteredRecoridngs);
 				}else if (type == "sentence"){
-
-				}else if (type == "list_word"){
-
+                    recordings.forEach(recording => {
+                        if (recording.recordingType == "sentence") {
+                            filteredRecoridngs.push(recording);
+                        }
+                    });
+                    createTable(filteredRecoridngs);
+				}else if (type == "word_list"){
+                    recordings.forEach(recording => {
+                        if (recording.recordingType == "word list") {
+                            filteredRecoridngs.push(recording);
+                        }
+                    });
+                    createTable(filteredRecoridngs);
 				}else if (type == "short_sentence"){
-
-				}else if (type == "unclassfied"){
-
+                    recordings.forEach(recording => {
+                        if (recording.recordingType == "short sentence") {
+                            filteredRecoridngs.push(recording);
+                        }
+                    });
+                    createTable(filteredRecoridngs);
+				}else if (type == "unclassified") {
+                    recordings.forEach(recording => {
+                        if (recording.recordingType == "unclassified") {
+                            filteredRecoridngs.push(recording);
+                        }
+                    });
+                    createTable(filteredRecoridngs);
+                }else if(type == "default"){
+                    createTable(recordings);
 				}
-
 			});
 		}
 
@@ -252,15 +277,19 @@
 			let suburb = $('#suburblist').val();
 			suburbchoosen = suburb;
 			if (suburb != "default") {
-				console.log("create table");
 				$.get(baseUrl+"/recordings/"+citychoosen+"/"+suburbchoosen).done(function(recordings){
 					createTable(recordings);
 					typeFilter(recordings);
+                    $('div#representative').show();
 				}).fail(function(){
 					deferred.reject();
 					alert("fail to get data");
 				});
-			}
+			}else if(suburb == "default"){
+
+                $('#typeList').val("default").attr('selected','selected');
+                $('#typeList').prop('disabled',true);
+            }
 		});
 
 		let tablinks = $('.tablinks');
@@ -305,7 +334,6 @@
 		}).fail(function () {
 			alert('Could not load notes');
 		});
-
 	});
 
 })(OC, jQuery);

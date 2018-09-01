@@ -40,11 +40,11 @@
 					</div>
 					<select class="custom-select" id="typeList" disabled>
 						<option selected value = "default">Choose...</option>
-						<option selected value = "word">word</option>
-						<option selected value = "sentence">sentence</option>
-						<option selected value = "list_word">list_word</option>
-						<option selected value = "short_sentence">short_sentence</option>
-						<option selected value = "unclassified">unclassified</option>
+						<option value = "word">word</option>
+						<option value = "sentence">sentence</option>
+						<option value = "word_list">word list</option>
+						<option value = "short_sentence">short sentence</option>
+						<option value = "unclassified">unclassified</option>
 					</select>
 				</div>
 			</div>
