@@ -189,26 +189,20 @@
 
 				$('#downloadAll').on('click',() => {
 					let checkedItems = [];
-					// let downloadUrl = baseUrl+ "/bulk-download?";
+					let downloadUrl = baseUrl+ "/bulk-download?";
 
 					$("input[name = 'dataCheck']:checked").each(function(){
 						checkedItems.push(parseInt($(this).val()));
 					});
 
-					// for(let i = 0; i < checkedItems.length; i++){
-					// 	downloadUrl = downloadUrl+"&idsToDownload[]="+$(this).val();
-					// 	if(i !=checkedItems.length - 1 ){
-					// 		downloadUrl = downloadUrl+"&"
-					// 	}
-					// }
-					// console.log(downloadUrl);
-					// window.open(downloadUrl);
-
-					$.get(baseUrl+ "/bulk-download", {
-						idsToDownload : checkedItems
-					}).done(function(){
-					});
-					console.log(checkedItems);
+                    console.log(checkedItems);
+					for(let i = 0; i < checkedItems.length; i++){
+						downloadUrl = downloadUrl+"&idsToDownload[]="+checkedItems[i];
+						if(i !=checkedItems.length - 1 ){
+							downloadUrl = downloadUrl+"&"
+						}
+					}
+					window.open(downloadUrl);
 				});
 
 				$('#Delete').on('click',() => {
@@ -230,18 +224,48 @@
 			let typelist = $('#typeList');
 			typelist.prop('disabled',false);
 			let filteredRecoridngs = [];
-			let type = list.val();
 			typelist.change(function() {
+                let type = typelist.val();
 				if(type == "word"){
-					console.log("word chosen");
+                    recordings.forEach(recording => {
+                    	if (recording.recordingType == "word") {
+                    		filteredRecoridngs.push(recording);
+                    	}
+                    });
+                    console.log(filteredRecoridngs);
+                    createTable(filteredRecoridngs);
 				}else if (type == "sentence"){
-
+                    recordings.forEach(recording => {
+                        if (recording.recordingType == "sentence") {
+                            filteredRecoridngs.push(recording);
+                        }
+                    });
+                    console.log(filteredRecoridngs);
+                    createTable(filteredRecoridngs);
 				}else if (type == "list_word"){
-
+                    recordings.forEach(recording => {
+                        if (recording.recordingType == "list_word") {
+                            filteredRecoridngs.push(recording);
+                        }
+                    });
+                    console.log(filteredRecoridngs);
+                    createTable(filteredRecoridngs);
 				}else if (type == "short_sentence"){
-
+                    recordings.forEach(recording => {
+                        if (recording.recordingType == "short_sentence") {
+                            filteredRecoridngs.push(recording);
+                        }
+                    });
+                    console.log(filteredRecoridngs);
+                    createTable(filteredRecoridngs);
 				}else if (type == "unclassfied"){
-
+                    recordings.forEach(recording => {
+                        if (recording.recordingType == "unclassfied") {
+                            filteredRecoridngs.push(recording);
+                        }
+                    });
+                    console.log(filteredRecoridngs);
+                    createTable(filteredRecoridngs);
 				}
 
 			});
@@ -305,7 +329,6 @@
 		}).fail(function () {
 			alert('Could not load notes');
 		});
-
 	});
 
 })(OC, jQuery);
