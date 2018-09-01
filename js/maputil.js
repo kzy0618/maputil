@@ -204,7 +204,11 @@
 					for(let i = 0; i < checkedItems.length; i++){
 						downloadUrl = downloadUrl+"&idsToDownload[]="+checkedItems[i];
 						if(i !=checkedItems.length - 1 ){
+<<<<<<< HEAD
 							downloadUrl = downloadUrl+"&";
+=======
+							downloadUrl = downloadUrl+"&"
+>>>>>>> d9356677aec8349aadcf2f5923c60f61a7958ca1
 						}
 					}
 					window.open(downloadUrl);
@@ -228,15 +232,25 @@
 		function typeFilter(recordings){
 			let typelist = $('#typeList');
 			typelist.prop('disabled',false);
+<<<<<<< HEAD
 			typelist.change(function() {
                 let type = typelist.val();
                 let filteredRecoridngs = [];
+=======
+			let filteredRecoridngs = [];
+			typelist.change(function() {
+                let type = typelist.val();
+>>>>>>> d9356677aec8349aadcf2f5923c60f61a7958ca1
 				if(type == "word"){
                     recordings.forEach(recording => {
                     	if (recording.recordingType == "word") {
                     		filteredRecoridngs.push(recording);
                     	}
                     });
+<<<<<<< HEAD
+=======
+                    console.log(filteredRecoridngs);
+>>>>>>> d9356677aec8349aadcf2f5923c60f61a7958ca1
                     createTable(filteredRecoridngs);
 				}else if (type == "sentence"){
                     recordings.forEach(recording => {
@@ -244,6 +258,7 @@
                             filteredRecoridngs.push(recording);
                         }
                     });
+<<<<<<< HEAD
                     createTable(filteredRecoridngs);
 				}else if (type == "word_list"){
                     recordings.forEach(recording => {
@@ -268,6 +283,34 @@
                     createTable(filteredRecoridngs);
                 }else if(type == "default"){
                     createTable(recordings);
+=======
+                    console.log(filteredRecoridngs);
+                    createTable(filteredRecoridngs);
+				}else if (type == "list_word"){
+                    recordings.forEach(recording => {
+                        if (recording.recordingType == "list_word") {
+                            filteredRecoridngs.push(recording);
+                        }
+                    });
+                    console.log(filteredRecoridngs);
+                    createTable(filteredRecoridngs);
+				}else if (type == "short_sentence"){
+                    recordings.forEach(recording => {
+                        if (recording.recordingType == "short_sentence") {
+                            filteredRecoridngs.push(recording);
+                        }
+                    });
+                    console.log(filteredRecoridngs);
+                    createTable(filteredRecoridngs);
+				}else if (type == "unclassfied"){
+                    recordings.forEach(recording => {
+                        if (recording.recordingType == "unclassfied") {
+                            filteredRecoridngs.push(recording);
+                        }
+                    });
+                    console.log(filteredRecoridngs);
+                    createTable(filteredRecoridngs);
+>>>>>>> d9356677aec8349aadcf2f5923c60f61a7958ca1
 				}
 			});
 		}
