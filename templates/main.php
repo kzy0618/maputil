@@ -9,7 +9,6 @@
 // put library here
 // example:
 // script('maputil', 'handlebars-v4.0.11');
-
 // jQuery is included by default on every page.
 ?>
 

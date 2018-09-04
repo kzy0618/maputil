@@ -4,7 +4,7 @@
 
 		let citychoosen = "default";
 		let suburbchoosen = "default";
-		let recordingData = [];
+		let tableStatus = "R";
 		function Citylist(baseUrl) {
 			this._baseUrl = baseUrl;
 			this._cities = [];
@@ -60,12 +60,38 @@
 				let defaultPption = document.createElement("option");
 				defaultPption.text = "Choose...";
 				$('#suburblist').empty().append(defaultPption).prop('disabled',true);
-                $('#typeList').val("default").attr('selected','selected');
-                $('#typeList').prop('disabled',true);
 			}
-			else{
-				alert("choose a city");
-			}
+            $('#typeList').val("default").attr('selected','selected');
+            $('#typeList').prop('disabled',true);
+            let mytable = $('table#representative > tbody');
+            let myheader = $('table#representative > thead');
+            mytable.html('');
+            myheader.html('');
+            let header =$('<tr>')
+                .append($('<th>').attr('scope','col').text(''))
+                .append($('<th>').attr('scope','col').text('#'))
+                .append($('<th>').attr('scope','col').text('ID'))
+                .append($('<th>').attr('scope','col').text('Filename'))
+                .append($('<th>').attr('scope','col').text('content'))
+                .append($('<th>').attr('scope','col').text('Type'))
+                .append($('<th>').attr('scope','col').text('Upload Date'))
+                .append($('<th>').attr('scope','col').text('Choose').attr('class','buttons'));
+            myheader.append(header);
+
+            mytable = $('table#stand-along > tbody');
+            myheader = $('table#stand-along > thead');
+            mytable.html('');
+            myheader.html('');
+            header =$('<tr>')
+                .append($('<th>').attr('scope','col').text('#'))
+                .append($('<th>').attr('scope','col').text('ID'))
+                .append($('<th>').attr('scope','col').text('Filename'))
+                .append($('<th>').attr('scope','col').text('content'))
+                .append($('<th>').attr('scope','col').text('Upload Date'))
+                .append($('<th>').attr('scope','col').text('Check').attr('class','buttons'));
+            myheader.append(header);
+
+
 			return deferred.promise();
 		});
 
@@ -131,7 +157,8 @@
 						radiobutton.attr('checked', true);
 					}
 
-					let hyperLinkDownload = $('<a>').attr('href',baseUrl+'/download/'+recording.id).text(recording.filename).addClass('hyperLinkDownload');
+					let filename = recording.filename.split(".")[0];
+					let hyperLinkDownload = $('<a>').attr('href',baseUrl+'/download/'+recording.id).text(filename).addClass('hyperLinkDownload');
 					let dataCheckbox = $('<input>').attr('type','checkbox').attr('name','dataCheck').attr('value',recording.id);
 					let row =$('<tr>')
 						.append($('<th>').append(dataCheckbox))
@@ -179,7 +206,8 @@
 					if(recording.isStandalone == 1){
 						checkbox.prop('checked',true);
 					}
-					let hyperLinkDownload = $('<a>').attr('href',baseUrl+'/download/'+recording.id).text(recording.filename).addClass('hyperLinkDownload');
+                    let filename = recording.filename.split(".")[0];
+					let hyperLinkDownload = $('<a>').attr('href',baseUrl+'/download/'+recording.id).text(filename).addClass('hyperLinkDownload');
 					let row =$('<tr>')
 						.append($('<th>').attr('scope','row').text(count))
 						.append($('<td>').text(recording.id))
@@ -280,13 +308,16 @@
 				$.get(baseUrl+"/recordings/"+citychoosen+"/"+suburbchoosen).done(function(recordings){
 					createTable(recordings);
 					typeFilter(recordings);
-                    $('div#representative').show();
+					if(tableStatus == "R"){
+                        $('div#representative').show();
+                    }else if(tableStatus == "S"){
+                        $('div#stand-along').show();
+                    }
 				}).fail(function(){
 					deferred.reject();
 					alert("fail to get data");
 				});
 			}else if(suburb == "default"){
-
                 $('#typeList').val("default").attr('selected','selected');
                 $('#typeList').prop('disabled',true);
             }
