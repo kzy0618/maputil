@@ -28,6 +28,7 @@ $application->registerRoutes($this, [
         ['name' => 'recording#download', 'url' => '/download/{id}', 'verb' => 'GET'],
         ['name' => 'recording#updateRepresentativeForRadioBtn', 'url' => '/recordings/update-representative-for-radio-btn', 'verb' => 'POST'],
         ['name' => 'recording#bulkDownload', 'url' => '/bulk-download', 'verb' => 'GET'],
-        ['name' => 'recording#bulkDelete', 'url' => '/bulk-delete', 'verb' => 'POST']
+        ['name' => 'recording#bulkDelete', 'url' => '/bulk-delete', 'verb' => 'POST'],
+        ['name' => 'recording#downloadAudioOnly', 'url' => '/download-audio-only/{id}', 'verb' => 'GET']
     ]
 ]);

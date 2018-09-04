@@ -183,12 +183,13 @@ class RecordingController extends Controller
 
     /**
      * all handlers in this controller must be privileged to admins only
+     * download audio only
      * @NoCSRFRequired
      * @param $id
      * @return DataResponse|Http\DownloadResponse
      * @throws \Exception if anything goes burst unexpectedly
      */
-    public function download($id) {
+    public function downloadAudioOnly($id) {
         if ($this->isInAdminGroup()) {
             $result = $this->recordingMapper->verifyDownload($id);
             if ($result === "recycle") {
@@ -201,6 +202,18 @@ class RecordingController extends Controller
         } else {
             return new DataResponse(["YOU NEED TO BE IN ADMIN GROUP IN ORDER TO USE THIS APP!!!"], Http::STATUS_UNAUTHORIZED); // 401 unauthorized
         }
+    }
+
+    /**
+     * Pessimistically attempt to undertake a download
+     * Download both audio and text files, returning a zip containing a pair of audio and text upon success
+     * @NoCSRFRequired
+     * @param $id
+     * @return Http\DataDownloadResponse|DataResponse
+     * @throws \Exception
+     */
+    public function download($id) {
+        return $this->bulkDownload([$id]);
     }
 
     /**
@@ -275,6 +288,7 @@ class RecordingController extends Controller
 
     /**
      * Pessimistically attempt to undertake a bulk download
+     * Download both audio and text files, returning a zip upon success
      * @NoCSRFRequired
      * @param array $idsToDownload
      * @return Http\DataDownloadResponse|DataResponse
@@ -317,7 +331,15 @@ class RecordingController extends Controller
                         $splitPath = explode("/", $result);
                         $this->log("DEBUGGING IN BULK DOWNLOAD: attempt to zip file ".$owncloudDataRoot . $result);
                         $isSuccess = $zip->addFile($owncloudDataRoot . "/Frenchalexia/" . $result, end($splitPath)); // we only care about the origins in Frenchalexia's dir, since they are free from interventions of non-admin users
-                        if ($isSuccess === false) {
+                        $txtPath = "";
+                        for ($i = 0 ; $i < count($splitPath) - 1 ; $i++ ) {
+                            $txtPath .= $splitPath[$i] . "/";
+                        }
+                        $endOfPath = end($splitPath);
+                        $txtFilename = explode(".", $endOfPath)[0] . ".txt";
+                        $txtPath .= $txtFilename;
+                        $isTxtAdded = $zip->addFile($owncloudDataRoot . "/Frenchalexia/" . $txtPath, $txtFilename);
+                        if ($isSuccess === false || $isTxtAdded === false) {
                             $isErrorOccur = true;
                             return new DataResponse(["deleted"], Http::STATUS_NOT_FOUND); // 404
                         }
