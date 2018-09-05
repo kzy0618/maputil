@@ -235,7 +235,11 @@
 							downloadUrl = downloadUrl+"&";
 						}
 					}
-					window.open(downloadUrl);
+					alert("Your download will begin soon");
+					let timer = setTimeout(() => {
+						clearTimeout(timer);
+                        window.open(downloadUrl);
+					}, 1000);
 				});
 
 				$('#Delete').on('click',() => {
