@@ -230,7 +230,7 @@
         testBulkDownload.appendChild(document.createTextNode("attempt to perform bulk download"));
         testBulkDownload.addEventListener("click", () => {
             $.get(OC.generateUrl("/apps/maputil/bulk-download"), {
-                idsToDownload : [27, 25, 22, 26]
+                idsToDownload : [1, 2, 3, 4]
             });
         });
 

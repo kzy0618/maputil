@@ -92,7 +92,7 @@ class RecordingController extends Controller
      * @return DataResponse
      */
     public function getSuburbs($city) {
-        // Get SUBURBS BY CITY
+		// Get SUBURBS BY CITY
         if ($this->isInAdminGroup()) {
             return new DataResponse($this->suburbTableHandler->findSuburbsByCity($city));
         } else {
