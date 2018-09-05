@@ -220,7 +220,9 @@
 					count++;
 				}
 
-				$('#downloadAll').on('click',() => {
+				let downloadAll = $('#downloadAll');
+				downloadAll.off('click');
+				downloadAll.on('click',() => {
 					let checkedItems = [];
 					let downloadUrl = baseUrl+ "/bulk-download?";
 
@@ -242,7 +244,9 @@
 					}, 1000);
 				});
 
-				$('#Delete').on('click',() => {
+            	let deleteAll = $('#Delete');
+            	deleteAll.off('click');
+            	deleteAll.on('click',() => {
 					let checkedItems = [];
 					$("input[name = 'dataCheck']:checked").each(function(){
 						checkedItems.push(parseInt($(this).val()));
