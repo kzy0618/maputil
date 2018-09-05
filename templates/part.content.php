@@ -52,7 +52,7 @@
 	<div class="data-content">
 		<div class="tab">
 			<button class="tablinks active" id="representativeButton">Representative</button>
-			<button class="tablinks" id="standalongButton">Standalong</button>
+			<button class="tablinks" id="standalongButton">Standalone</button>
 			<div class="downloadAll"><button class="fa fa-download" id="downloadAll"></button></div>
 			<div class="Delete"><button class="fa fa-trash" id="Delete"></button></div>
 		</div>
