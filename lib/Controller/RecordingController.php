@@ -296,7 +296,7 @@ class RecordingController extends Controller
      */
     public function bulkDownload(array $idsToDownload){
         if ($this->isInAdminGroup()) {
-            $owncloudDataRoot = "/var/www/owncloud/data";
+            $owncloudDataRoot = "/var/www/p4/owncloud/data";
             $folder = \OC::$server->getUserFolder('Frenchalexia');
             $folderPath = $folder->getPath();
             $this->log("DEBUGGING IN BULK DOWNLOAD: folder full path: $owncloudDataRoot$folderPath");
