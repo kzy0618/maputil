@@ -259,7 +259,7 @@
 							createTable(recordings);
 							typeFilter(recordings);
                         $('div#representative').show();
-						tableStatus == "R"；
+						tableStatus == "R";
 						}
 					}).fail(function(){
 					deferred.reject();
