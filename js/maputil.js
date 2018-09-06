@@ -255,20 +255,18 @@
 						idsToDelete : checkedItems
 					}).done(function() {
 						alert("Recording delete success.");
-						$.get(baseUrl+"/recordings/"+citychoosen+"/"+suburbchoosen).done(function(recordings){	
+						$.get(baseUrl+"/recordings/"+citychoosen+"/"+suburbchoosen).done(function(recordings){
 							createTable(recordings);
 							typeFilter(recordings);
-                        $('div#representative').show();
-						tableStatus == "R";
-						}
+                        	$('div#representative').show();
+							tableStatus = "R";
+						});
 					}).fail(function(){
-					deferred.reject();
-					alert("fail to get data");
+						deferred.reject();
+						alert("fail to get data");
 					});
 				});
-				});
-
-		}
+			}
 
 		function typeFilter(recordings){
 			let typelist = $('#typeList');
