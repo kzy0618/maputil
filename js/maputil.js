@@ -254,9 +254,18 @@
 					$.post(OC.generateUrl("/apps/maputil/bulk-delete"), {
 						idsToDelete : checkedItems
 					}).done(function() {
-						createTable();
+						alert("Recording delete success.");
+						$.get(baseUrl+"/recordings/"+citychoosen+"/"+suburbchoosen).done(function(recordings){	
+							createTable(recordings);
+							typeFilter(recordings);
+                        $('div#representative').show();
+						tableStatus == "R"；
+						}
+					}).fail(function(){
+					deferred.reject();
+					alert("fail to get data");
 					});
-					console.log(checkedItems);
+				});
 				});
 
 		}
